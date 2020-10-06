@@ -1,6 +1,12 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom";
 
-import { Content } from './Content';
+import App from "./app";
 
-ReactDOM.render(<Content />, document.getElementById('content'));
+const rootElement = document.getElementById("content");
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  rootElement
+);

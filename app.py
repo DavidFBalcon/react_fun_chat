@@ -1,11 +1,14 @@
 import os
 import flask
 import flask_socketio
+import json
 from flask_socketio import SocketIO, send
 
 app = flask.Flask(__name__)
 socketio = flask_socketio.SocketIO(app)
 socketio.init_app(app, cors_allowed_origins="*")
+
+items = []
 
 @app.route('/')
 def hello():

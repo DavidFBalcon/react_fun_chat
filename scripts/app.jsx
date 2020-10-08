@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import ChatLog from "./ChatLog";
 import { v4 } from "uuid";
+import { Socket } from './Socket';
 
 export default function App() {
   const [userMsg, setMsg] = useState([]);
@@ -23,7 +24,7 @@ export default function App() {
 
   return (
     <>
-      <h1>Prototype Terminator</h1>
+      <h1>Chatroom</h1>
       <input ref={userInput} type="text" onKeyDown={send_message_onkey} />
       <button onClick={send_message_button}>Send Message</button>
       <ul>

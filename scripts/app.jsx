@@ -2,6 +2,8 @@ import React, { useState, useRef } from "react";
 import ChatLog from "./ChatLog";
 import { v4 } from "uuid";
 import { Socket } from './Socket';
+import Paper from '@material-ui/core/Paper'
+import Typography from '@material-ui/core/Typography'
 
 export default function App() {
   const [userMsg, setMsg] = useState([]);

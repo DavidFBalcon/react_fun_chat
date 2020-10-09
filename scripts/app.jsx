@@ -8,12 +8,12 @@ export default function App() {
   const userInput = useRef();
 
   function send_message_button(e) {
-    const addMsg = userInput.current.value;
+    let addMsg = userInput.current.value;
     if (addMsg === "") return;
-    setMsg((prevUserMsg) => {
-      return [...prevUserMsg, { id: v4(), plaintext: addMsg }];
-    });
+    Socket.emit('new message', {'message': addMsg})
+    console.log('Message sent to server: ' + addMsg);
     userInput.current.value = null;
+    e.preventDefault();
   }
 
   function send_message_onkey(e) {
@@ -21,6 +21,22 @@ export default function App() {
       send_message_button(e);
     }
   }
+
+  function getNewAddresses() {
+      React.useEffect(() => {
+          Socket.on('message display', updateMsg);
+          return () => {
+              Socket.off('message display', updateMsg);
+          }
+      });
+  }
+    
+  function updateMsg(data) {
+      console.log("Received messages from server: " + data['messages']);
+      setMsg(data['messages']);
+  }
+    
+  getNewAddresses();
 
   return (
     <>

@@ -5,7 +5,7 @@ import { Socket } from './Socket';
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 
-export default function App() {
+export default function App(username) {
   const [userMsg, setMsg] = useState([]);
   const userInput = useRef();
 

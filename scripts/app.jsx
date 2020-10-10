@@ -36,7 +36,9 @@ export default function App(props) {
     
   function updateMsg(data) {
       console.log("Received messages from server: " + data['messages']);
-      setMsg(data['messages']);
+      setMsg((prevUserMsg) => {
+      return [...prevUserMsg, data['messages']];
+    });
   }
     
   getNewMessages();

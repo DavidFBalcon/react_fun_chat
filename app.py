@@ -26,9 +26,14 @@ def on_disconnect():
 @socketio.on('new message')
 def on_new_message(data):
     print("Recieved new data from client: ", data)
+    
     #TODO: SAVE MESSAGE TO DATABASE, THEN SEND MESSAGE: TEMPORARY STORAGE 
     temp_data.append(data['message'])
     ret_data = data['message']
+    print("Sending new data to client.")
+    socketio.emit('message display', {'messages': data['message']})
+    
+    #Checking for bot commands
     command_flag = False
     string_check = ret_data.split()
     #BOT COMMANDS
@@ -40,20 +45,20 @@ def on_new_message(data):
             temp_data.append(postTranslate)
             print("Sending data + funtranslation to client.")
             print(postTranslate)
-            socketio.emit('message display', {'messages': temp_data})
+            socketio.emit('message display', {'messages': postTranslate})
         elif(string_check[1] == "about"):
-            temp_data.append("Hi I'm a bot!")
-            socketio.emit('message display', {'messages': temp_data})
+            msg = "Hi I'm a bot!"
+            temp_data.append(msg)
+            socketio.emit('message display', {'messages': msg})
         elif(string_check[1] == "help"):
-            temp_data.append("Here are all the commands I know: about, funtranslate, and placeholder.")
-            socketio.emit('message display', {'messages': temp_data})
+            msg = "Here are all the commands I know: about, funtranslate, and placeholder."
+            temp_data.append(msg)
+            socketio.emit('message display', {'messages': msg})
         else:
             print("Unrecognized command recieved.")
-            temp_data.append("Sorry, I didn't understand that command.")
-            socketio.emit('message display', {'messages': temp_data})
-    else:
-        print("Sending new data to client.")
-        socketio.emit('message display', {'messages': temp_data})
+            msg="Sorry, I didn't understand that command."
+            temp_data.append(msg)
+            socketio.emit('message display', {'messages': msg})
 
 @app.route('/')
 def hello():

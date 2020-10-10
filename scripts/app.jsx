@@ -5,10 +5,11 @@ import { Socket } from './Socket';
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 
-export default function App(username) {
+export default function App(props) {
   const [userMsg, setMsg] = useState([]);
   const userInput = useRef();
-
+  const currentUser = props.username;
+  
   function send_message_button(e) {
     let addMsg = userInput.current.value;
     if (addMsg === "") return;
@@ -43,6 +44,7 @@ export default function App(username) {
   return (
     <>
       <h1>Chatroom</h1>
+      <h1>Welcome {currentUser}!</h1>
       <input ref={userInput} type="text" onKeyDown={send_message_onkey} />
       <button onClick={send_message_button}>Send Message</button>
       <ul>

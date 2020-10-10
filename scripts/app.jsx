@@ -25,7 +25,7 @@ export default function App(props) {
     }
   }
 
-  function getNewAddresses() {
+  function getNewMessages() {
       React.useEffect(() => {
           Socket.on('message display', updateMsg);
           return () => {
@@ -39,7 +39,7 @@ export default function App(props) {
       setMsg(data['messages']);
   }
     
-  getNewAddresses();
+  getNewMessages();
 
   return (
     <>

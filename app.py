@@ -62,6 +62,8 @@ def on_new_message(data):
             msg="Sorry, I didn't understand that command."
             temp_data.append(msg)
             socketio.emit('message display', {'messages': msg})
+            
+
 
 @app.route('/')
 def hello():

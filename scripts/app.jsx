@@ -10,6 +10,16 @@ export default function App(props) {
   const userInput = useRef();
   const currentUser = props.username;
   
+  React.useEffect(() => {
+    Socket.emit('retrieve history')}, []);
+    
+  React.useEffect(() => {
+    Socket.on('sent history', updateMsg);
+    return () => {
+      Socket.off('sent history', updateMsg);
+      }
+    }, []);
+  
   function send_message_button(e) {
     let addMsg = userInput.current.value;
     if (addMsg === "") return;
@@ -40,7 +50,7 @@ export default function App(props) {
       return [...prevUserMsg, data['messages']];
     });
   }
-    
+  
   getNewMessages();
 
   return (

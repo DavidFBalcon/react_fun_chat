@@ -8,7 +8,6 @@ import requests
 app = flask.Flask(__name__)
 socketio = flask_socketio.SocketIO(app)
 socketio.init_app(app, cors_allowed_origins="*")
-
 temp_data=[]
 
 @socketio.on('connect')
@@ -17,16 +16,20 @@ def on_connect():
     socketio.emit('connected', {
         'test': 'Connected'
     })
-    #TODO: ASSIGN USERNAME AND USER HISTORY TO UPDATE STATE.
+    #TODO: PROVIDE CHAT HISTORY TO FRESH CONNECTIONS
 
 @socketio.on('disconnect')
 def on_disconnect():
     print ('Someone disconnected!')
+    
+@socketio.on('retrieve history')
+def on_retrieve_history():
+    print("Request for chat history recieved.")
+    socketio.emit('sent history', {'messages': temp_data})
 
 @socketio.on('new message')
 def on_new_message(data):
     print("Recieved new data from client: ", data)
-    
     #TODO: SAVE MESSAGE TO DATABASE, THEN SEND MESSAGE: TEMPORARY STORAGE 
     temp_data.append(data['message'])
     ret_data = data['message']

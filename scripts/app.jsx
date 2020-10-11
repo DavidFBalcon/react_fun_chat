@@ -7,20 +7,33 @@ import Typography from '@material-ui/core/Typography'
 
 export default function App(props) {
   const [userMsg, setMsg] = useState([{'message': "Hello!", 'user': 'Jeffrey'}]);
+  const [userCount, setCount] = useState(0);
   const userInput = useRef();
   const currentUser = props.username;
   
+  
+  //RETRIEVING THE CHAT HISTORY
   React.useEffect(() => {
     Socket.emit('retrieve history')}, []);
-    
+  
   React.useEffect(() => {
     Socket.on('sent history', setMsg);
     return () => {
       Socket.off('sent history', setMsg);
       }
     }, []);
+    
+  //RETRIEVE USER COUNT DYNAMICALLY
+  React.useEffect(() => {
+    Socket.emit('user update')}, []);
   
-  
+  React.useEffect(() => {
+    Socket.on('user change', setCount);
+    return () => {
+      Socket.off('user change', setCount);
+      }
+    }, []);
+    
   function send_message_button(e) {
     let addMsg = userInput.current.value;
     if (addMsg === "") return;
@@ -58,6 +71,7 @@ export default function App(props) {
     <>
       <h1>Chatroom</h1>
       <h1>Welcome {currentUser}!</h1>
+      <h3>There are currently {userCount} users online.</h3>
       <input ref={userInput} type="text" onKeyDown={send_message_onkey} />
       <button onClick={send_message_button}>Send Message</button>
       <ul>

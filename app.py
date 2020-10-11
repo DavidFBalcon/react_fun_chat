@@ -39,7 +39,6 @@ import models
 ##SENDS CHAT HISTORY TO ALL PARTICIPANTS
 def emit_all_history(channel):
     all_history = [{'message': record.plaintext, 'user': record.userName} for record in db.session.query(models.ChatHistory).all()]
-    print(all_history)
     socketio.emit(channel, all_history)
     
 ##SOCKET EVENTS
@@ -51,33 +50,43 @@ def on_connect():
         'test': 'Connected'
     })
     currentUsers+=1
+    socketio.emit('user change', currentUsers)
 
 @socketio.on('disconnect')
 def on_disconnect():
     global currentUsers
     print ('Someone disconnected!')
     currentUsers-=1
+    socketio.emit('user change', currentUsers)
+    
+@socketio.on('user update')
+def on_user_update():
+    global currentUsers
+    socketio.emit('user change', currentUsers)
     
 @socketio.on('retrieve history')
 def on_retrieve_history():
     print("Request for chat history recieved.")
     emit_all_history('sent history')
+    
 
+#SOCKET EVENT FOR A NEW MESSAGE
 @socketio.on('new message')
 def on_new_message(data):
     print("Recieved new data from client: ", data)
-    #TODO: SAVE MESSAGE TO DATABASE, THEN SEND MESSAGE
+    
+    #SAVING MESSAGE TO DATABASE AND SENDING TO CLIENT FOR DISPLAY
     db.session.add(models.ChatHistory(data['message'], data['user']))
     db.session.commit()
     print("Sending new data to client.")
     socketio.emit('message display', data)
     
-    #Checking for bot commands
+    #CHECKING IF BOT COMMAND IS TRUE
     ret_data = data['message']
-    command_flag = False
     string_check = ret_data.split()
     #BOT COMMANDS
     if(string_check[0] == "!!"):
+        ##FUNTRANSLATE
         if(string_check[1] == "funtranslate"):
             preTranslate = str(ret_data.partition('funtranslate')[2])
             response = requests.get("https://api.funtranslations.com/translate/australian.json?text=" + preTranslate)
@@ -85,21 +94,38 @@ def on_new_message(data):
             db.session.add(models.ChatHistory(postTranslate, "Bot"))
             print("Sending data + funtranslation to client.")
             print(postTranslate)
+            db.session.commit()
             socketio.emit('message display', {'message': postTranslate, 'user': "Bot"})
+        
+        ##ABOUT
         elif(string_check[1] == "about"):
             msg = "Hi I'm a bot!"
             db.session.add(models.ChatHistory(msg, "Bot"))
+            db.session.commit()
             socketio.emit('message display', {'message': msg, 'user': "Bot"})
+            
+        ##HELP
         elif(string_check[1] == "help"):
-            msg = "Here are all the commands I know: about, funtranslate, and placeholder."
+            msg = "Here are all the commands I know: about, funtranslate, dad, and placeholder."
             db.session.add(models.ChatHistory(msg, "Bot"))
+            db.session.commit()
             socketio.emit('message display', {'message': msg, 'user': "Bot"})
+            
+        ##DAD JOKE API
+        elif(string_check[1] == "dad"):
+            response=requests.get("https://icanhazdadjoke.com/", headers={'Accept': 'application/json'})
+            msg=response.json()['joke']
+            db.session.add(models.ChatHistory(msg, "Bot"))
+            db.session.commit()
+            socketio.emit('message display', {'message': msg, 'user': "Bot"})
+            
+        ##UNKNOWN COMMAND
         else:
             print("Unrecognized command recieved.")
             msg="Sorry, I didn't understand that command."
             db.session.add(models.ChatHistory(msg, "Bot"))
+            db.session.commit()
             socketio.emit('message display', {'message': msg, 'user': "Bot"})
-    db.session.commit()
             
 
 

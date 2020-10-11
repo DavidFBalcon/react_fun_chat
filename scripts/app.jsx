@@ -6,7 +6,7 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 
 export default function App(props) {
-  const [userMsg, setMsg] = useState([]);
+  const [userMsg, setMsg] = useState([{'message': "Hello!", 'user': 'Jeffrey'}]);
   const userInput = useRef();
   const currentUser = props.username;
   
@@ -14,17 +14,18 @@ export default function App(props) {
     Socket.emit('retrieve history')}, []);
     
   React.useEffect(() => {
-    Socket.on('sent history', updateMsg);
+    Socket.on('sent history', setMsg);
     return () => {
-      Socket.off('sent history', updateMsg);
+      Socket.off('sent history', setMsg);
       }
     }, []);
+  
   
   function send_message_button(e) {
     let addMsg = userInput.current.value;
     if (addMsg === "") return;
-    Socket.emit('new message', {'message': addMsg})
-    console.log('Message sent to server: ' + addMsg);
+    Socket.emit('new message', {'message': addMsg, 'user': currentUser})
+    console.log('Message-user sent to server: ' + addMsg + " " + currentUser);
     userInput.current.value = null;
     e.preventDefault();
   }
@@ -45,9 +46,9 @@ export default function App(props) {
   }
     
   function updateMsg(data) {
-      console.log("Received messages from server: " + data['messages']);
+      console.log("Received message-user from server: " + data['message'] + " " + data['user']);
       setMsg((prevUserMsg) => {
-      return [...prevUserMsg, data['messages']];
+      return [...prevUserMsg, {'message': data['message'], 'user': data['user']}];
     });
   }
   

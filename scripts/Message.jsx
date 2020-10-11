@@ -1,5 +1,5 @@
 import React from "react";
 
-export default function Message({ input }) {
-  return <li>{input}</li>;
+export default function Message({ input, user }) {
+  return <li>{input} -{user}</li>;
 }

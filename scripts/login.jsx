@@ -1,6 +1,7 @@
 import React, {useState, useRef} from "react";
 import ReactDOM from "react-dom";
 import App from "./app";
+import './loginstyle.css';
 
 export default function Login() {
     const [loggedIn, setLoggedIn] = useState(false);
@@ -29,11 +30,13 @@ export default function Login() {
     }
     else{
         return(
-            <>
-                <h1>Login</h1>
-                <input ref={userInput} type="text" onKeyDown={send_user_onkey} />
-                <button onClick={loginUser}>Login with Username</button>
-            </>
+            <div className="outermost">
+                <div className="inner">
+                    <h1 className="header">Login</h1>
+                    <div><input className="input" ref={userInput} type="text" onKeyDown={send_user_onkey} /></div>
+                    <div><button className={'button'} onClick={loginUser}>Login with Username</button></div>
+                </div>
+            </div>
             );
     }
 }

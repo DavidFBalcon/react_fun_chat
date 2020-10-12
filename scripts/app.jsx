@@ -1,9 +1,8 @@
 import React, { useState, useRef } from "react";
 import ChatLog from "./ChatLog";
-import { v4 } from "uuid";
 import { Socket } from './Socket';
-import Paper from '@material-ui/core/Paper'
-import Typography from '@material-ui/core/Typography'
+import './appstyle.css'
+import ScrollToBottom from 'react-scroll-to-bottom';
 
 export default function App(props) {
   const [userMsg, setMsg] = useState([]);
@@ -68,15 +67,17 @@ export default function App(props) {
   getNewMessages();
 
   return (
-    <>
-      <h1>Chatroom</h1>
-      <h1>Welcome {currentUser}!</h1>
-      <h3>There are currently {userCount} users online.</h3>
-      <input ref={userInput} type="text" onKeyDown={send_message_onkey} />
-      <button onClick={send_message_button}>Send Message</button>
-      <ul>
-        <ChatLog history={userMsg} />
-      </ul>
-    </>
+    <div className="outer">
+      <div className="container">
+        <div className="pageTitle"><h1>Chatroom</h1></div>
+        <h1>Welcome {currentUser}!</h1>
+        <h3>There are currently {userCount} users online.</h3>
+        <ScrollToBottom className="message_container">
+            <ChatLog history={userMsg} reader={currentUser} />
+        </ScrollToBottom>
+        <input ref={userInput} type="text" onKeyDown={send_message_onkey} />
+        <button onClick={send_message_button}>Send Message</button>
+      </div>
+    </div>
   );
 }

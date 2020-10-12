@@ -1,0 +1,65 @@
+.sentMessage{
+    float:right;
+    display: block;
+    clear: both;
+}
+
+.readMessage{
+    float:left;
+    display: block;
+    clear: both;
+}
+
+.userText{
+    display: flex;
+    align-items: center;
+    font-family: Helvetica;
+    color: #FFFFFF;
+    letter-spacing: 0.3px;
+    clear: both;
+}
+
+.contentText{
+    display: flex;
+    align-items: center;
+    font-family: Helvetica;
+    color: #000000;
+    letter-spacing: 0.3px;
+    clear: both;
+}
+
+.selfText{
+    display: flex;
+    align-items: center;
+    font-family: Helvetica;
+    color: #404040;
+    letter-spacing: 0.3px;
+    clear: both;
+}
+
+.user_box{
+  background: #add8e6;
+  border-radius: 20px;
+  padding: 5px 20px;
+  color: blue;
+  display: inline-block;
+  max-width: 80%;
+}
+
+.bot_box{
+  background: #800080;
+  border-radius: 20px;
+  padding: 5px 20px;
+  color: blue;
+  display: inline-block;
+  max-width: 80%;
+}
+
+.reader_box{
+  background: #000099;
+  border-radius: 20px;
+  padding: 5px 20px;
+  color: blue;
+  display: inline-block;
+  max-width: 80%;
+}

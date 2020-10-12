@@ -18,6 +18,7 @@ dotenv_path = join(dirname(__file__), 'sql.env')
 load_dotenv(dotenv_path)
 
 #BOILER PLATE CODE TO INSTANTIATE PSQL AND SQLALCHEMY
+
 database_uri = os.environ['DATABASE_URL']
     
 app.config['SQLALCHEMY_DATABASE_URI'] = database_uri

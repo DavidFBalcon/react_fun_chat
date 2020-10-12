@@ -20,9 +20,12 @@ class CoolBot:
     def funtranslate(self, ret_data):
         try:
             preTranslate = str(ret_data.partition('funtranslate')[2])
-            response = requests.get("https://api.funtranslations.com/translate/australian.json?text=" + preTranslate)
-            postTranslate = response.json()['contents']['translated']
-            self.msg=postTranslate
+            if(len(preTranslate)==0):
+                self.msg="Please input a sentence to translate after 'funtranslate.'"
+            else:
+                response = requests.get("https://api.funtranslations.com/translate/australian.json?text=" + preTranslate)
+                postTranslate = response.json()['contents']['translated']
+                self.msg=postTranslate
             return({'message': self.msg, 'user': "Bot"})
         except:
             self.msg = "Sorry! You either did not provide anything to translate, or your input was malformed."

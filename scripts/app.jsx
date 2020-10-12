@@ -6,7 +6,7 @@ import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
 
 export default function App(props) {
-  const [userMsg, setMsg] = useState([{'message': "Hello!", 'user': 'Jeffrey'}]);
+  const [userMsg, setMsg] = useState([]);
   const [userCount, setCount] = useState(0);
   const userInput = useRef();
   const currentUser = props.username;

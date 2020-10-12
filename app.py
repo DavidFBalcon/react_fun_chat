@@ -7,7 +7,6 @@ import flask_socketio
 import flask_sqlalchemy
 import json
 import requests
-import models
 
 app = flask.Flask(__name__)
 
@@ -35,6 +34,7 @@ db.app = app
 currentUsers = 0
 
 import models
+import chatbot
 
 ##SENDS CHAT HISTORY TO ALL PARTICIPANTS
 def emit_all_history(channel):
@@ -81,52 +81,39 @@ def on_new_message(data):
     print("Sending new data to client.")
     socketio.emit('message display', data)
     
-    #CHECKING IF BOT COMMAND IS TRUE
+    #CHECKING IF BOT COMMAND IS TRUE AND INITIALIZING BOT
+    funbot = chatbot.CoolBot()
     ret_data = data['message']
     string_check = ret_data.split()
+    to_emit = {}
     #BOT COMMANDS
-    if(string_check[0] == "!!"):
+    if(funbot.isCommand(data['message'])):
         ##FUNTRANSLATE
         if(string_check[1] == "funtranslate"):
-            preTranslate = str(ret_data.partition('funtranslate')[2])
-            response = requests.get("https://api.funtranslations.com/translate/australian.json?text=" + preTranslate)
-            postTranslate = response.json()['contents']['translated']
-            db.session.add(models.ChatHistory(postTranslate, "Bot"))
-            print("Sending data + funtranslation to client.")
-            print(postTranslate)
-            db.session.commit()
-            socketio.emit('message display', {'message': postTranslate, 'user': "Bot"})
-        
+            funbot.funtranslate(ret_data)
+            to_emit = funbot.funtranslate(ret_data)
         ##ABOUT
         elif(string_check[1] == "about"):
-            msg = "Hi I'm a bot!"
-            db.session.add(models.ChatHistory(msg, "Bot"))
-            db.session.commit()
-            socketio.emit('message display', {'message': msg, 'user': "Bot"})
-            
+            funbot.about()
+            to_emit = funbot.about()
         ##HELP
         elif(string_check[1] == "help"):
-            msg = "Here are all the commands I know: about, funtranslate, dad, and placeholder."
-            db.session.add(models.ChatHistory(msg, "Bot"))
-            db.session.commit()
-            socketio.emit('message display', {'message': msg, 'user': "Bot"})
-            
+            funbot.bot_help()
+            to_emit = funbot.bot_help()
         ##DAD JOKE API
         elif(string_check[1] == "dad"):
-            response=requests.get("https://icanhazdadjoke.com/", headers={'Accept': 'application/json'})
-            msg=response.json()['joke']
-            db.session.add(models.ChatHistory(msg, "Bot"))
-            db.session.commit()
-            socketio.emit('message display', {'message': msg, 'user': "Bot"})
-            
+            funbot.dad()
+            to_emit=funbot.dad()
         ##UNKNOWN COMMAND
         else:
             print("Unrecognized command recieved.")
-            msg="Sorry, I didn't understand that command."
-            db.session.add(models.ChatHistory(msg, "Bot"))
-            db.session.commit()
-            socketio.emit('message display', {'message': msg, 'user': "Bot"})
-            
+            funbot.unknown()
+            to_emit = funbot.unknown()
+        
+        #COMMIT AND SEND
+        db.session.add(models.ChatHistory(funbot.msg, "Bot"))
+        db.session.commit()
+        socketio.emit('message display', to_emit)
 
 
 @app.route('/')

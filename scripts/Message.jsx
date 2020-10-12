@@ -4,32 +4,38 @@ import "./Messagestyles.css"
 export default function Message({ input, user, reader }) {
     if(user === reader){
         return (
-            <div className="sentMessage">
-                <div className="user_box">
-                    <p className="selfText">{user}</p>
+            <div class="msg-user">
+              <div class="self-tag">{user}</div>
+              <div class="bubble-container ">
+                <div class="bubble self">
+                  {input}
                 </div>
-                <p className="contentText">{input}</p>
-            </div>
+              </div>
+             </div>
         );
     }
     else if(user==="Bot"){
         return(
-            <div className="readMessage">
-                <div className="bot_box">
-                    <p className="userText">{user}</p>
+            <div class="msg-user">
+              <div class="user-tag-container-other">{user}</div>
+              <div class="bubble-container">
+                <div class="bubble bot">
+                  {input}
                 </div>
-                <p className="contentText">{input}</p>
+              </div>
             </div>
             );
     }
     else{
         return(
-            <div className="readMessage">
-                <div className="reader_box">
-                    <p className="userText">{user}</p>
+            <div class="msg-user">
+              <div class="user-tag-container-other">{user}</div>
+              <div class="bubble-container">
+                <div class="bubble incoming">
+                  {input}
                 </div>
-                <p className="contentText">{input}</p>
-            </div>
+              </div>
+             </div>
             );
         
     }

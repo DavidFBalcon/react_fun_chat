@@ -1,65 +1,53 @@
-.sentMessage{
-    float:right;
-    display: block;
-    clear: both;
+.bubble-container {
+  display: flex;
+  width: 100%;
 }
 
-.readMessage{
-    float:left;
-    display: block;
-    clear: both;
+.msg-user{
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem; 
 }
 
-.userText{
-    display: flex;
-    align-items: center;
-    font-family: Helvetica;
-    color: #FFFFFF;
-    letter-spacing: 0.3px;
-    clear: both;
+.user-tag-container-other{
+  margin-bottom: .5rem;
+  margin-left:1rem;
+  margin-right: auto;
 }
 
-.contentText{
-    display: flex;
-    align-items: center;
-    font-family: Helvetica;
-    color: #000000;
-    letter-spacing: 0.3px;
-    clear: both;
+.self-tag{
+  margin-right: 1rem;
+  margin-left: auto;
+  margin-bottom: .5rem;
+  text-align:right;
 }
 
-.selfText{
-    display: flex;
-    align-items: center;
-    font-family: Helvetica;
-    color: #404040;
-    letter-spacing: 0.3px;
-    clear: both;
+.bubble {
+  font-size: 1.3rem;
+  padding: 1rem 1.4rem;
+  border-radius: .9rem;
+  width: auto;
+  max-width: 300px;
+  overflow:hidden;
 }
 
-.user_box{
-  background: #add8e6;
-  border-radius: 20px;
-  padding: 5px 20px;
-  color: blue;
-  display: inline-block;
-  max-width: 80%;
+.incoming {
+  color: white;
+  background-color: #000080;
+  margin-left:1rem;
+  margin-right: auto;
 }
 
-.bot_box{
-  background: #800080;
-  border-radius: 20px;
-  padding: 5px 20px;
-  color: blue;
-  display: inline-block;
-  max-width: 80%;
+.self {
+  color: black;
+  background-color: #add8e6;
+  margin-right: 1rem;
+  margin-left: auto;
+  text-align:right;
 }
 
-.reader_box{
-  background: #000099;
-  border-radius: 20px;
-  padding: 5px 20px;
-  color: blue;
-  display: inline-block;
-  max-width: 80%;
+.bot {
+  color: white;
+  background-color: #800080;
+  margin-right:auto;
+  margin-left:1rem;
 }

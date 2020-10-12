@@ -11,7 +11,8 @@
   e) `npm install --save-dev webpack`  
   f) `npm install socket.io-client --save`  
   g) `npm install --save-dev style-loader`
-  h) `npm install --save-dev css-loader` :warning: Important! In order for the module to properly pack stylesheets, open webpack.config.js and ensure that  the loader rule in module is set to: :warning: `{ test: /.css$/, loader: "style-loader!css-loader" }`
+  h) `npm install -g heroku`
+  i) `npm install --save-dev css-loader` :warning: Important! In order for the module to properly pack stylesheets, open webpack.config.js and ensure that  the loader rule in module is set to: :warning: `{ test: /.css$/, loader: "style-loader!css-loader" }`
   ```
  ## Getting PSQL and running SQLAlchemy
 2. Set up PSQL by installing the following packages
@@ -63,7 +64,7 @@
   e) Set your heroku app as a git remote via `heroku git:remote -a {your_app_name}`
   f) Push repository to heroku using `git push heroku master.`
   g) Open your app in your heroku dashboard.
-  
+```  
 ## Running the Program
 5. Run the code using the following:  
 ```
@@ -79,3 +80,20 @@
   d) `dad`
   e) `anime {anime_query}`
 ```  
+
+## Documentation: Problems and Future Features
+
+7. Issues encountered and fixed:
+```
+  a) CSS files not being packed by the module in react. Fixed by installing the proper css webpacks and modifying the module, as shown in this README.
+  b) Linebreaks and HTML tags not being rendered by ReactDOM. Fixed by utilizing the React dangerouslySetInnerHtml to parse HTML tags in ReactDOM.
+  c) Database not instantiating on first python run. When someone requests chat history, the relation would not exist. Realized the problem was attributed to importing the models.py before the variable db was created in app.py, when db was a dependency in models.py. Fixed by importing models later and instantiating the relation upon index render.
+  d) Chatbot would silently fail when someone sent a command !! anime or !! funtranslate without parameters, due to the logic attempting to parse outside of list index after partitioning the message. Fixed by implementing a try-except clause and prompting the user with a message from a bot, requesting the proper parameters.
+  e) Encountered issues with PSQL Peer Authentication Error when pushing local tables to heroku as well as SQL_user information. Circumvented this buy simply allowing heroku to use models.py to create its own table and claim ownership.
+ ```
+ 8. Improvements
+ ```
+   a) If possible, the implementation of profile pictures. Beside every bubble, a small profile picture, randomly defaulted at first and with a choice to upload, would be present.
+   b) Using additional CSS, be able to expand the message box in preview mode. In its current state, when viewed in the Cloud9 Preview browser box, the message box is only able to view one message at a time, which is slightly inconvenient.
+   c) Be able to add channel functionality. This would be done using PSQL and integrating logic to parse different tables depending on the channel, changing the chat history state accordingly.
+ ```

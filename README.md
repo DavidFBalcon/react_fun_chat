@@ -52,6 +52,19 @@
     ii) `\c postgres`
     iii) `\dt`
  ```   
+## Deploying onto Heroku
+5. To deploy on heroku, create an account at http://heroku.com/
+6. cd into project2-m1-dfb8 and log into heroku by performing the follow:
+```
+  a) `heroku login -i`
+  b) Input your heroku username and password.
+  c) Create an app with `heroku create -a {your_app_name}`
+  d) Install postgres on heroku with `heroku addons:create heroku-postgresql:hobby-dev`
+  e) Set your heroku app as a git remote via `heroku git:remote -a {your_app_name}`
+  f) Push repository to heroku using `git push heroku master.`
+  g) Open your app in your heroku dashboard.
+  
+## Running the Program
 5. Run the code using the following:  
 ```
   a) `npm run watch`. If prompted to install webpack-cli, type "yes." Allow this program to indefinitely run in order to pack react.js into javascript scripts.

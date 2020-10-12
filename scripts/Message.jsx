@@ -1,14 +1,18 @@
 import React from "react";
 import "./Messagestyles.css"
 
-export default function Message({ input, user, reader }) {
+export default function Message({ text, user, reader }) {
+    function createMarkup() {
+    return {__html: {text}.text};
+  }
+
     if(user === reader){
         return (
-            <div class="msg-user">
-              <div class="self-tag">{user}</div>
-              <div class="bubble-container ">
-                <div class="bubble self">
-                  {input}
+            <div className="msg-user">
+              <div className="self-tag">{user}</div>
+              <div className="bubble-container ">
+                <div className="bubble self">
+                  {text}
                 </div>
               </div>
              </div>
@@ -16,23 +20,21 @@ export default function Message({ input, user, reader }) {
     }
     else if(user==="Bot"){
         return(
-            <div class="msg-user">
-              <div class="user-tag-container-other">{user}</div>
-              <div class="bubble-container">
-                <div class="bubble bot">
-                  {input}
-                </div>
+            <div className="msg-user">
+              <div className="user-tag-container-other">{user}</div>
+              <div className="bubble-container">
+                <div className="bubble bot" dangerouslySetInnerHTML={createMarkup()}/>
               </div>
             </div>
             );
     }
     else{
         return(
-            <div class="msg-user">
-              <div class="user-tag-container-other">{user}</div>
-              <div class="bubble-container">
-                <div class="bubble incoming">
-                  {input}
+            <div className="msg-user">
+              <div className="user-tag-container-other">{user}</div>
+              <div className="bubble-container">
+                <div className="bubble incoming">
+                  {text}
                 </div>
               </div>
              </div>

@@ -104,6 +104,9 @@ def on_new_message(data):
         elif(string_check[1] == "dad"):
             funbot.dad()
             to_emit=funbot.dad()
+        elif(string_check[1] == "anime"):
+            funbot.anime_search(ret_data)
+            to_emit=funbot.anime_search(ret_data)
         ##UNKNOWN COMMAND
         else:
             print("Unrecognized command recieved.")

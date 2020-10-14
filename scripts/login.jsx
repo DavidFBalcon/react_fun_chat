@@ -1,6 +1,8 @@
 import React, {useState, useRef} from "react";
 import ReactDOM from "react-dom";
 import App from "./app";
+import { GoogleLogin } from 'react-google-login';
+import { Socket } from './Socket';
 import './loginstyle.css';
 
 export default function Login() {
@@ -8,23 +10,31 @@ export default function Login() {
     const [username, setUsername] = useState("");
     const userInput = useRef();
     
-    function loginUser(e) {
-        let newName = userInput.current.value;
-        if (newName === "") return;
-        setUsername(newName);
-        setLoggedIn(true);
-        console.log("Passed username: ", newName);
-        userInput.current.value = null;
-        e.preventDefault();
-      }
+    function loginUser(response) {
+        const name = response.getBasicProfile().getName();
+        const email = response.getBasicProfile().getEmail();
+        const id_token = response.getAuthResponse().id_token;
+        console.log("Sending auth token " + id_token);
+        Socket.emit('new google user', {"name": name, "email": email, "idtoken": id_token});
 
-    function send_user_onkey(e) {
-        if (e.key === "Enter") {
-          loginUser(e);
-        }
       }
       
+    function loginUserFail(response){
+        console.log("Unable to verify.")
+    }
+     
+    function verifiedSession(){
+        React.useEffect(() => {
+            Socket.on('Verified', (data) => {
+                console.log("Session verified, rerouting...");
+                setLoggedIn(true);
+                setUsername(data);
+            })
+        });
+    }
       
+    verifiedSession()
+    
     if(loggedIn){
         return(<App username={username} />);
     }
@@ -32,9 +42,14 @@ export default function Login() {
         return(
             <div className="outermost">
                 <div className="inner">
-                    <h1 className="header">Login</h1>
-                    <div><input className="input" ref={userInput} type="text" onKeyDown={send_user_onkey} /></div>
-                    <div><button className={'button'} onClick={loginUser}>Login with Username</button></div>
+                    <h1 className="header">Login with Google</h1>
+                    <GoogleLogin
+                        clientId="698177391473-sfucar7t4qoum5rpt14mso7vkbuh1lao.apps.googleusercontent.com"
+                        buttonText="Login"
+                        onSuccess={loginUser}
+                        onFailure={loginUserFail}
+                        cookiePolicy={'single_host_origin'}
+                    />
                 </div>
             </div>
             );

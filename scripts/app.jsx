@@ -9,7 +9,7 @@ export default function App(props) {
   const [userCount, setCount] = useState(0);
   const userInput = useRef();
   const currentUser = props.username;
-  
+  const pfp_tag = props.pfp_tag;
   
   //RETRIEVING THE CHAT HISTORY
   React.useEffect(() => {
@@ -36,7 +36,7 @@ export default function App(props) {
   function send_message_button(e) {
     let addMsg = userInput.current.value;
     if (addMsg === "") return;
-    Socket.emit('new message', {'message': addMsg, 'user': currentUser})
+    Socket.emit('new message', {'message': addMsg, 'user': currentUser, 'pfp_url': pfp_tag})
     console.log('Message-user sent to server: ' + addMsg + " " + currentUser);
     userInput.current.value = null;
     e.preventDefault();
@@ -60,7 +60,7 @@ export default function App(props) {
   function updateMsg(data) {
       console.log("Received message-user from server: " + data['message'] + " " + data['user']);
       setMsg((prevUserMsg) => {
-      return [...prevUserMsg, {'message': data['message'], 'user': data['user']}];
+      return [...prevUserMsg, {'message': data['message'], 'user': data['user'], 'pfp_url': data['pfp_url']}];
     });
   }
   

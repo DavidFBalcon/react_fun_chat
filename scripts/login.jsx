@@ -1,4 +1,4 @@
-import React, {useState, useRef} from "react";
+import React, {useState} from "react";
 import ReactDOM from "react-dom";
 import App from "./app";
 import { GoogleLogin } from 'react-google-login';
@@ -8,19 +8,20 @@ import './loginstyle.css';
 export default function Login() {
     const [loggedIn, setLoggedIn] = useState(false);
     const [username, setUsername] = useState("");
-    const userInput = useRef();
+    const [pfp, setPfp] = useState("");
     
     function loginUser(response) {
         const name = response.getBasicProfile().getName();
         const email = response.getBasicProfile().getEmail();
+        const pfp_url = '<img src="' + response.getBasicProfile().getImageUrl() + '">';
+        setPfp(pfp_url);
         const id_token = response.getAuthResponse().id_token;
         console.log("Sending auth token " + id_token);
         Socket.emit('new google user', {"name": name, "email": email, "idtoken": id_token});
-
       }
       
     function loginUserFail(response){
-        console.log("Unable to verify.")
+        console.log("Unable to verify.");
     }
      
     function verifiedSession(){
@@ -36,7 +37,7 @@ export default function Login() {
     verifiedSession()
     
     if(loggedIn){
-        return(<App username={username} />);
+        return(<App username={username} pfp_tag={pfp} />);
     }
     else{
         return(

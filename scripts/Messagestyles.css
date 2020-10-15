@@ -1,25 +1,60 @@
+img{
+    max-width: 100%;
+    display: block;
+}
+
 .bubble-container {
   display: flex;
   width: 100%;
 }
+
+/*USER PFP TAG CSS*/
 
 .msg-user{
   margin-top: 1.5rem;
   margin-bottom: 1.5rem; 
 }
 
-.user-tag-container-other{
-  margin-bottom: .5rem;
-  margin-left:1rem;
+.msg-user-other{
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem; 
+  align-items:center;
+  float:left;
+}
+
+.user-pfp-self{
+  margin-right:1rem;
+  margin-left: auto;
+  max-width: fit-content;
+  white-space:nowrap;
+}
+
+.user-pfp-other{
   margin-right: auto;
+  margin-left: 1rem;
+  max-width: fit-content;
+  white-space:nowrap;
 }
 
 .self-tag{
-  margin-right: 1rem;
-  margin-left: auto;
-  margin-bottom: .5rem;
-  text-align:right;
+  display:inline;
+  white-space:nowrap;
 }
+
+.user-tag-container-other{
+  display:inline;
+  white-space:nowrap;
+}
+
+
+.pfp{
+  display:inline-block;
+  width:30px;
+  margin-right:0.25rem;
+  border-radius:50%;
+}
+
+/* BUBBLE CSS */
 
 .bubble {
   font-size: 1.3rem;
@@ -51,7 +86,6 @@
   margin-left:1rem;
 }
 
-img{
-    max-width: 100%;
-    display: block;
+.clear{
+  clear:both;  
 }

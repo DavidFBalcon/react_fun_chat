@@ -37,7 +37,7 @@ import chatbot
 
 ##SENDS CHAT HISTORY TO ALL PARTICIPANTS
 def emit_all_history(channel):
-    all_history = [{'message': record.plaintext, 'user': record.userName} for record in db.session.query(models.ChatHistory).all()]
+    all_history = [{'message': record.plaintext, 'user': record.userName, 'pfp_url': record.pfp_url} for record in db.session.query(models.ChatHistory).all()]
     socketio.emit(channel, all_history)
     
 def push_new_user_to_db(id, name, email):
@@ -111,10 +111,10 @@ def on_new_message(data):
 
     
     #SAVING MESSAGE TO DATABASE AND SENDING TO CLIENT FOR DISPLAY
-    db.session.add(models.ChatHistory(ret_data, data['user']))
+    db.session.add(models.ChatHistory(ret_data, data['user'], data['pfp_url']))
     db.session.commit()
     print("Sending new data to client.")
-    socketio.emit('message display', {'message': ret_data, 'user': data['user']})
+    socketio.emit('message display', {'message': ret_data, 'user': data['user'], 'pfp_url': data['pfp_url']})
     
     
     #CHECKING IF BOT COMMAND IS TRUE AND INITIALIZING BOT
@@ -147,7 +147,7 @@ def on_new_message(data):
             funbot.unknown()
             to_emit = funbot.unknown()
         #COMMIT AND SEND
-        db.session.add(models.ChatHistory(funbot.msg, "Bot"))
+        db.session.add(models.ChatHistory(funbot.msg, "Bot", funbot.pfp_url))
         db.session.commit()
         socketio.emit('message display', to_emit)
     
@@ -156,7 +156,7 @@ def on_new_message(data):
         for link in img:
             funbot.img_render(link)
             to_emit=funbot.img_render(link)
-            db.session.add(models.ChatHistory(funbot.msg, "Bot"))
+            db.session.add(models.ChatHistory(funbot.msg, "Bot", funbot.pfp_url))
             db.session.commit()
             socketio.emit('message display', to_emit)
             

@@ -61,3 +61,8 @@ class CoolBot:
         except:
             self.msg = "Sorry! We either couldn't find that anime, did not provide an anime at all, or you've provided malformed input."
             return({'message': self.msg, 'user': 'Bot'})
+            
+    def img_render(self, img):
+        img_tag = "<img src=" + "\"" + img + "\">"
+        self.msg = img_tag
+        return({'message': self.msg, 'user': 'Bot'})

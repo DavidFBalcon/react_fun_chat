@@ -27,7 +27,7 @@
   border-radius: .9rem;
   width: auto;
   max-width: 300px;
-  overflow:hidden;
+  word-wrap: break-word
 }
 
 .incoming {
@@ -49,4 +49,9 @@
   background-color: #800080;
   margin-right:auto;
   margin-left:1rem;
+}
+
+img{
+    max-width: 100%;
+    display: block;
 }

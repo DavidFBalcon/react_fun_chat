@@ -11,9 +11,7 @@ export default function Message({ text, user, reader }) {
             <div className="msg-user">
               <div className="self-tag">{user}</div>
               <div className="bubble-container ">
-                <div className="bubble self">
-                  {text}
-                </div>
+                <div className="bubble self" dangerouslySetInnerHTML={createMarkup()}/>
               </div>
              </div>
         );
@@ -33,8 +31,7 @@ export default function Message({ text, user, reader }) {
             <div className="msg-user">
               <div className="user-tag-container-other">{user}</div>
               <div className="bubble-container">
-                <div className="bubble incoming">
-                  {text}
+                <div className="bubble incoming" dangerouslySetInnerHTML={createMarkup()}>
                 </div>
               </div>
              </div>

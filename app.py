@@ -7,6 +7,7 @@ import flask_socketio
 import flask_sqlalchemy
 import json
 import requests
+import validators
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
@@ -56,19 +57,20 @@ def on_connect():
 def on_disconnect():
     global currentUsers
     print ('Someone disconnected!')
-    currentUsers-=1
+    if(currentUsers>0):
+        currentUsers-=1
     socketio.emit('user change', currentUsers)
     
 @socketio.on('user update')
 def on_user_update():
     global currentUsers
-    print(currentUsers)
     socketio.emit('user change', currentUsers)
     
 @socketio.on('new google user')
 def on_new_google_user(data):
     global currentUsers
     print("Beginning to authenticate data: ", data)
+    sid = flask.request.sid
     try:
         idinfo = id_token.verify_oauth2_token(data['idtoken'], requests.Request(), "698177391473-sfucar7t4qoum5rpt14mso7vkbuh1lao.apps.googleusercontent.com")
         userid = idinfo['sub']
@@ -76,8 +78,10 @@ def on_new_google_user(data):
         exists = db.session.query(models.AuthUser.id).filter_by(id=userid).scalar() is not None
         if(not exists):
             push_new_user_to_db(userid, data['name'], data['email'])
+        print("Updating currentUsers ", currentUsers)
         currentUsers+=1
-        socketio.emit('Verified', data['name'])
+        print("Current users in room: ", currentUsers)
+        socketio.emit('Verified', data['name'], room=sid)
     except ValueError:
     # Invalid token
         print("Could not verify token.")
@@ -93,19 +97,30 @@ def on_retrieve_history():
 @socketio.on('new message')
 def on_new_message(data):
     print("Recieved new data from client: ", data)
+    #URL VALIDATION
+    ret_data = data['message']
+    string_check = ret_data.split()
+    extensions = [".jpg", ".png", ".gif"]
+    img = []
+    for i in range(len(string_check)):
+        if validators.url(string_check[i]):
+            if(string_check[i][-4:] in extensions):
+                img.append(string_check[i])
+            string_check[i] = "<a href=" + "\"" + string_check[i] + "\">" + string_check[i] + "</a>"
+    ret_data=" ".join(string_check)
+
     
     #SAVING MESSAGE TO DATABASE AND SENDING TO CLIENT FOR DISPLAY
-    db.session.add(models.ChatHistory(data['message'], data['user']))
+    db.session.add(models.ChatHistory(ret_data, data['user']))
     db.session.commit()
     print("Sending new data to client.")
-    socketio.emit('message display', data)
+    socketio.emit('message display', {'message': ret_data, 'user': data['user']})
+    
     
     #CHECKING IF BOT COMMAND IS TRUE AND INITIALIZING BOT
     funbot = chatbot.CoolBot()
-    ret_data = data['message']
-    string_check = ret_data.split()
     to_emit = {}
-    #BOT COMMANDS
+    #CHECKING FOR BOT COMMANDS
     if(funbot.isCommand(data['message'])):
         ##FUNTRANSLATE
         if(string_check[1] == "funtranslate"):
@@ -131,12 +146,21 @@ def on_new_message(data):
             print("Unrecognized command recieved.")
             funbot.unknown()
             to_emit = funbot.unknown()
-        
         #COMMIT AND SEND
         db.session.add(models.ChatHistory(funbot.msg, "Bot"))
         db.session.commit()
         socketio.emit('message display', to_emit)
-
+    
+    #CHECKING FOR ANY IMAGES TO DISPLAY AND DISPLAYS THEM ALL WITH BOT
+    if(len(img)!=0):
+        for link in img:
+            funbot.img_render(link)
+            to_emit=funbot.img_render(link)
+            db.session.add(models.ChatHistory(funbot.msg, "Bot"))
+            db.session.commit()
+            socketio.emit('message display', to_emit)
+            
+        
 
 @app.route('/')
 def hello():

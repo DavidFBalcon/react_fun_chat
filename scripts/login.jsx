@@ -42,7 +42,7 @@ export default function Login() {
         return(
             <div className="outermost">
                 <div className="inner">
-                    <h1 className="header">Login with Google</h1>
+                    <h1 className="header">Really Awesome Chat App</h1>
                     <GoogleLogin
                         clientId="698177391473-sfucar7t4qoum5rpt14mso7vkbuh1lao.apps.googleusercontent.com"
                         buttonText="Login"

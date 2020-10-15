@@ -12,7 +12,10 @@
   f) `npm install socket.io-client --save`  
   g) `npm install --save-dev style-loader`
   h) `npm install -g heroku`
-  i) `npm install --save-dev css-loader` :warning: Important! In order for the module to properly pack stylesheets, open webpack.config.js and ensure that  the loader rule in module is set to: :warning: `{ test: /.css$/, loader: "style-loader!css-loader" }`
+  i) `npm install --save-dev css-loader` :warning: Important! In order for the module to properly pack stylesheets, open webpack.config.js and add this loader to the rules[] in module: :warning: `{ test: /.css$/, loader: "style-loader!css-loader" }`
+  j) `npm install url-loader --save-dev` warning: Important! In order for the module to properly pack images, open webpack.config.js and add this loader to the rules[] in module: :warning: `{test: /\.(jpg|png)$/, use: {loader: 'url-loader',},}`
+  k) `pip install --upgrade google-auth`
+  l) `npm install react-google-login`
   ```
  ## Getting PSQL and running SQLAlchemy
 2. Set up PSQL by installing the following packages
@@ -39,15 +42,15 @@
       ii) Create a superuser with a password using the below command.
           `create user [some_username_here] superuser password '[some_unique_new_password_here]';`  
       iii) `\q` to quit out of sql
-  g) `cd` into `project2-m1-dfb8` and create a `sql.env` file. create two variables `SQL_USER=` and `SQL_PASSWORD=` in, substituting the created username and password exactly.
+  g) `cd` into `project2-m1-dfb8` and create a `sql.env` file. create two variables `export SQL_USER=` and `export SQL_PASSWORD=` in, substituting the created username and password exactly.
 ```
 4. Enable SQLAlchemy and grant it permissions to write to the database by modifying the following files: 
 ```
   a) Open file in vim: `sudo vim /var/lib/pgsql9/data/pg_hba.conf`
       i) or using `sudo vim $(psql -c "show hba_file;" | grep pg_hba.conf)`  
-  b) Replace all values of `ident` with `md5` in Vim: `:%s/ident/md5/g`  
+  b) Replace all values of `ident` and `peer` with `md5` in Vim: `:%s/ident/md5/g` & `:%s/peer/md5/g`  
   c) Run `sudo service postgresql restart`  
-  d) Ensure that `sql.env` has the username/password of the created superuser.
+  d) Ensure that `sql.env` has the username/password of the created superuser. Add: export DATABASE_URL='postgresql://{your_SQL_USER}:{your_SQL_PASSWORD}@localhost/postgres'
   e) If you would like to view your tables after the code is run, do the following:
     i) `psql`
     ii) `\c postgres`
@@ -62,8 +65,13 @@
   c) Create an app with `heroku create -a {your_app_name}`
   d) Install postgres on heroku with `heroku addons:create heroku-postgresql:hobby-dev`
   e) Set your heroku app as a git remote via `heroku git:remote -a {your_app_name}`
-  f) Push repository to heroku using `git push heroku master.`
-  g) Open your app in your heroku dashboard.
+  f) Push your database into heroku:
+    i) Run `psql`, then type ALTER DATABASE posgres OWENER TO {your_SQL_USER};
+    ii) Type \l and ensure your superuser is the owner of the Postgres database.
+    iii) Exit to terminal, then type `PGUSER={your_SQL_USER} heroku pg:push postgres DATABASE_URL`
+    iv) Input password when prompted.
+  g) Push repository to heroku using `git push heroku master.`
+  h) Open your app in your heroku dashboard.
 ```  
 ## Running the Program
 5. Run the code using the following:  
@@ -72,7 +80,7 @@
   b) Open a new terminal and run `python app.py`  
   c) Preview Running Application. If there are any errors, hard referesh your cache and reload the page.
 ```  
-6. Login with any nickname of your choosing and begin to chat away. The bot supports the following commands, preceded by !!:
+6. Login with any nickname of your choosing and begin to chat away. The bot supports the following commands, preceded by "!! ":
 ```
   a) `help`
   b) `about`
@@ -93,9 +101,7 @@
  ```
  8. Improvements
  ```
-   a) If possible, the implementation of profile pictures. Beside every bubble, a small profile picture, randomly defaulted at first and with a choice to upload, would be present.
+   a) If possible, the implementation of profile pictures. Beside every bubble, a small profile picture, randomly defaulted at first and with a choice to upload, would be present. (COMPLETED!)
    b) Using additional CSS, be able to expand the message box in preview mode. In its current state, when viewed in the Cloud9 Preview browser box, the message box is only able to view one message at a time, which is slightly inconvenient.
    c) Be able to add channel functionality. This would be done using PSQL and integrating logic to parse different tables depending on the channel, changing the chat history state accordingly.
  ```
-pip install --upgrade google-auth
-npm install react-google-login

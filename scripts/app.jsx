@@ -69,9 +69,13 @@ export default function App(props) {
   return (
     <div className="outer">
       <div className="container">
-        <div className="pageTitle"><h1>Chatroom</h1></div>
-        <h1>Welcome {currentUser}!</h1>
-        <h3>There are currently {userCount} users online.</h3>
+        <div className="pageTitle">
+          <h1>Chatroom</h1>
+        </div>
+        <div className="welcome">
+          <h1>Welcome {currentUser}!</h1>
+          <h3>There are currently {userCount} users online.</h3>
+        </div>
         <ScrollToBottom className="message_container">
             <ChatLog history={userMsg} reader={currentUser} />
         </ScrollToBottom>

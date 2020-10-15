@@ -5,6 +5,7 @@ attrs==20.2.0
 awscli==1.18.127
 backcall==0.2.0
 botocore==1.17.50
+cachetools==4.1.1
 certifi==2020.6.20
 chardet==3.0.4
 click==7.1.2
@@ -18,6 +19,7 @@ Flask==1.1.2
 Flask-SocketIO==4.3.1
 Flask-SQLAlchemy==2.1
 git-remote-codecommit==1.15.1
+google-auth==1.22.1
 greenlet==0.4.17
 idna==2.10
 idna-ssl==1.1.0
@@ -48,6 +50,7 @@ prompt-toolkit==3.0.6
 psycopg2-binary==2.8.6
 ptyprocess==0.6.0
 pyasn1==0.4.8
+pyasn1-modules==0.2.8
 Pygments==2.6.1
 PyJWT==1.7.1
 pylint==1.8.1
@@ -75,6 +78,7 @@ tweepy==3.9.0
 twilio==6.45.1
 typing-extensions==3.7.4.3
 urllib3==1.25.10
+validators==0.18.1
 virtualenv==16.2.0
 virtualenv-clone==0.5.4
 virtualenvwrapper==4.8.4

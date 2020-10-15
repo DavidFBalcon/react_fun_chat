@@ -30,7 +30,7 @@ export default function Message({ text, user, reader, pfp_url }) {
             <div className="msg-user">
             
               <div className="user-pfp-other">
-                <div className="pfp"><img src={botpfp} /></div><div className="user-tag-container-other">{user}</div>
+                <div className="pfp"><img src={botpfp} /></div><div className="user-tag-container-other">Paimon (Emergency Food) [Bot]</div>
               </div>
               
               <div className="bubble-container">

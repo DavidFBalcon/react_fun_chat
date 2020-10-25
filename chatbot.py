@@ -1,6 +1,7 @@
 import flask_sqlalchemy
 from flask_socketio import SocketIO, send
 import models
+from app import db
 import requests
 from pprint import pprint
 from jikanpy import Jikan
@@ -9,14 +10,7 @@ class CoolBot:
     def __init__(self):
         self.msg=""
         self.pfp_url="<img src=" + "\"./botpfp.png\">"
-        
-    def isCommand(self, message):
-        ret_data = message
-        string_check = ret_data.split()
-        if(string_check[0] == "!!"):
-            return True
-        else:
-            return False
+        self.commandFlag = False
         
     def funtranslate(self, ret_data):
         try:
@@ -67,3 +61,32 @@ class CoolBot:
         img_tag = "<img src=" + "\"" + img + "\">"
         self.msg = img_tag
         return({'message': self.msg, 'user': "Bot", 'pfp_url': self.pfp_url})
+        
+    def isCommand(self, message, imgLink):
+        ret_data = message
+        string_check = ret_data.split()
+        if(string_check[0] == "!!"):
+            self.commandFlag = True
+            if(string_check[1] == "funtranslate"):
+                return self.funtranslate(message)
+            ##ABOUT
+            elif(string_check[1] == "about"):
+                return self.about()
+            ##HELP
+            elif(string_check[1] == "help"):
+                return self.bot_help()
+            ##DAD JOKE API
+            elif(string_check[1] == "dad"):
+                return self.dad()
+            ##anime
+            elif(string_check[1] == "anime"):
+                return self.anime_search(message)
+            ##UNKNOWN COMMAND
+            else:
+                print("Unrecognized command recieved.")
+                return self.unknown()
+        elif(imgLink != ""):
+                return self.img_render(imgLink)
+        else:
+            return False
+    

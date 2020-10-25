@@ -71,7 +71,7 @@ def on_new_google_user(data):
     global currentUsers
     print("Beginning to authenticate data: ", data)
     sid = flask.request.sid
-    try:
+    try:    
         idinfo = id_token.verify_oauth2_token(data['idtoken'], requests.Request(), "698177391473-sfucar7t4qoum5rpt14mso7vkbuh1lao.apps.googleusercontent.com")
         userid = idinfo['sub']
         print("Verified user. Proceeding to check database.")
@@ -119,43 +119,17 @@ def on_new_message(data):
     
     #CHECKING IF BOT COMMAND IS TRUE AND INITIALIZING BOT
     funbot = chatbot.CoolBot()
-    to_emit = {}
     #CHECKING FOR BOT COMMANDS
-    if(funbot.isCommand(data['message'])):
-        ##FUNTRANSLATE
-        if(string_check[1] == "funtranslate"):
-            funbot.funtranslate(ret_data)
-            to_emit = funbot.funtranslate(ret_data)
-        ##ABOUT
-        elif(string_check[1] == "about"):
-            funbot.about()
-            to_emit = funbot.about()
-        ##HELP
-        elif(string_check[1] == "help"):
-            funbot.bot_help()
-            to_emit = funbot.bot_help()
-        ##DAD JOKE API
-        elif(string_check[1] == "dad"):
-            funbot.dad()
-            to_emit=funbot.dad()
-        elif(string_check[1] == "anime"):
-            funbot.anime_search(ret_data)
-            to_emit=funbot.anime_search(ret_data)
-        ##UNKNOWN COMMAND
-        else:
-            print("Unrecognized command recieved.")
-            funbot.unknown()
-            to_emit = funbot.unknown()
-        #COMMIT AND SEND
+    to_emit = funbot.isCommand(ret_data, "")
+    #COMMIT AND SEND
+    if(funbot.commandFlag):
         db.session.add(models.ChatHistory(funbot.msg, "Bot", funbot.pfp_url))
         db.session.commit()
         socketio.emit('message display', to_emit)
-    
     #CHECKING FOR ANY IMAGES TO DISPLAY AND DISPLAYS THEM ALL WITH BOT
-    if(len(img)!=0):
+    elif(len(img)!=0):
         for link in img:
-            funbot.img_render(link)
-            to_emit=funbot.img_render(link)
+            to_emit=funbot.isCommand(ret_data, link)
             db.session.add(models.ChatHistory(funbot.msg, "Bot", funbot.pfp_url))
             db.session.commit()
             socketio.emit('message display', to_emit)

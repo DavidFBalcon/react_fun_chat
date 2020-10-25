@@ -44,6 +44,18 @@ def push_new_user_to_db(id, name, email):
     db.session.add(models.AuthUser(id, name, email));
     db.session.commit();
     
+def check_images(to_check, imgArray):
+    extensions = [".jpg", ".png", ".gif"]
+    has_image = False
+    for i in range(len(to_check)):
+        if validators.url(to_check[i]):
+            has_image = True
+            if(to_check[i][-4:] in extensions):
+                imgArray.append(to_check[i])
+            to_check[i] = "<a href=" + "\"" + to_check[i] + "\">" + to_check[i] + "</a>"
+    return has_image
+    
+    
 ##SOCKET EVENTS
 @socketio.on('connect')
 def on_connect():
@@ -100,16 +112,9 @@ def on_new_message(data):
     #URL VALIDATION
     ret_data = data['message']
     string_check = ret_data.split()
-    extensions = [".jpg", ".png", ".gif"]
     img = []
-    for i in range(len(string_check)):
-        if validators.url(string_check[i]):
-            if(string_check[i][-4:] in extensions):
-                img.append(string_check[i])
-            string_check[i] = "<a href=" + "\"" + string_check[i] + "\">" + string_check[i] + "</a>"
+    check_images(string_check, img)
     ret_data=" ".join(string_check)
-
-    
     #SAVING MESSAGE TO DATABASE AND SENDING TO CLIENT FOR DISPLAY
     db.session.add(models.ChatHistory(ret_data, data['user'], data['pfp_url']))
     db.session.commit()

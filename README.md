@@ -109,3 +109,4 @@
 pip install pylint-flask-sqlalchemy
 npm install eslint --save-dev
 npm install --save prop-types
+coverage run -m --source=.. unittest *.py && coverage html

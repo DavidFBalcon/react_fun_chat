@@ -8,3 +8,4 @@ htmlcov/
 tests/.coverage
 tests/htmlcov/
 .coverage
+/scripts/.eslintrc.js

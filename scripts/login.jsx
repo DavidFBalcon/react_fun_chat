@@ -13,21 +13,19 @@ export default function Login() {
   function loginUser(response) {
     const name = response.getBasicProfile().getName();
     const email = response.getBasicProfile().getEmail();
-    const pfp_url = `<img src="${response.getBasicProfile().getImageUrl()}">`;
-    setPfp(pfp_url);
-    const { id_token } = response.getAuthResponse();
-    console.log(`Sending auth token ${id_token}`);
-    Socket.emit('new google user', { name, email, idtoken: id_token });
+    const pfpUrl = `<img src="${response.getBasicProfile().getImageUrl()}">`;
+    setPfp(pfpUrl);
+    const { idToken } = response.getAuthResponse();
+    Socket.emit('new google user', { name, email, idtoken: idToken });
   }
 
-  function loginUserFail(response) {
-    console.log('Unable to verify.');
+  function loginUserFail() {
+    return false;
   }
 
   function verifiedSession() {
     React.useEffect(() => {
       Socket.on('Verified', (data) => {
-        console.log('Session verified, rerouting...');
         setLoggedIn(true);
         setUsername(data);
       });

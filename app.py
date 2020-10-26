@@ -94,10 +94,11 @@ def on_new_google_user(data):
         currentUsers+=1
         print("Current users in room: ", currentUsers)
         socketio.emit('Verified', data['name'], room=sid)
+        return True
     except ValueError:
     # Invalid token
         print("Could not verify token.")
-        pass
+        return False
     
 @socketio.on('retrieve history')
 def on_retrieve_history():
@@ -120,7 +121,6 @@ def on_new_message(data):
     db.session.commit()
     print("Sending new data to client.")
     socketio.emit('message display', {'message': ret_data, 'user': data['user'], 'pfp_url': data['pfp_url']})
-    
     
     #CHECKING IF BOT COMMAND IS TRUE AND INITIALIZING BOT
     funbot = chatbot.CoolBot()

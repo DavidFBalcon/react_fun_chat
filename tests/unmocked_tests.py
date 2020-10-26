@@ -4,10 +4,11 @@
     This file tests all methods in chatbot.py.
 '''
 
+import sys, os
+sys.path.append(os.path.abspath(os.path.join('..')))
 import unittest
-import sys
 import chatbot
-import app_unmocked
+import app
 
 KEY_INPUT = "arg1"
 KEY_INPUT2 = "arg2"
@@ -76,7 +77,6 @@ class ChatbotTestCase(unittest.TestCase):
         for test in self.failure_test_params:
             print("Test")
             
-            
 class ImageTestCase(unittest.TestCase):
     def setUp(self):
         self.success_test_params = [
@@ -92,7 +92,7 @@ class ImageTestCase(unittest.TestCase):
             
     def test_check_img_success(self):
         for test in self.success_test_params:
-            response = app_unmocked.check_images(test[KEY_INPUT], test[KEY_INPUT2])
+            response = app.check_images(test[KEY_INPUT], test[KEY_INPUT2])
             expected = test[KEY_EXPECTED]
             self.assertEqual(response, expected)
                 

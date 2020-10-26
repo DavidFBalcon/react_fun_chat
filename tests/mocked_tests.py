@@ -3,13 +3,17 @@
     
     This file tests twitter_query.py.
 '''
-
+import sys, os
+sys.path.append(os.path.abspath(os.path.join('..')))
+from unittest.mock import Mock
+from requests.models import Response
+from os.path import join, dirname
+from dotenv import load_dotenv
 import unittest
 import unittest.mock as mock
-from chatbot import CoolBot
-from dotenv import load_dotenv
-import os
-from os.path import join, dirname
+import chatbot
+import json
+import app
 
 KEY_INPUT = "arg1"
 KEY_INPUT2 = "arg2"
@@ -18,13 +22,43 @@ KEY_MESSAGE = "message"
 KEY_USER = "user"
 KEY_PFP = "pfp_url"
 
-class MockedDadResponse:
-    def __init__(self, id, joke, status):
-        self.id = id
-        self.joke = joke
-        self.status = status
+        
+#MOCKING REQUESTS.GET IN DAD
+def mocked_requests_get_dad(*args, **kwargs):
+    class MockedDadResponse:
+        def __init__(self, json_data, status):
+            self.json_data = json_data
+            self.status = status
+    
+        def json(self):
+            return self.json_data
+            
+    if args[0] == 'https://icanhazdadjoke.com/':
+        return MockedDadResponse({"joke": "My dog used to chase people on a bike a lot. It got so bad I had to take his bike away."}, 200)
+    return MockedDadResponse(None, 404)
 
-class BotQueryTestCase(unittest.TestCase):
+def mocked_requests_funtranslate(*args, **kwargs):
+    class MockedFunResponse:
+        def __init__(self, json_data, status):
+            self.json_data = json_data
+            self.status = status
+    
+        def json(self):
+            return self.json_data
+            
+    return MockedFunResponse({"contents": {"translated": "Welcome to Macca's"}}, 200)
+    
+def mocked_requests_anime(*args, **kwargs):
+    class MockedFunResponse:
+        def __init__(self, dict_data, status):
+            self.dict_data = dict_data
+            self.status = status
+    
+        def ret_data(self):
+            return self.dict_data
+    return MockedFunResponse({'results':[{'title': 'Shoujo Shuumatsu Ryokou', 'score': 8.19, 'synopsis': 'Amid the desolate remains of a once-thriving city, only the rumbling of a motorbike breaks the cold '}]}, 200).ret_data()
+        
+class DadQueryTestCase(unittest.TestCase):
     def setUp(self):
         self.success_test_params = [
             {
@@ -37,41 +71,109 @@ class BotQueryTestCase(unittest.TestCase):
                 }
             }
         ]
-        
-    def mocked_random_choice(self, values):
-        return values[0]
     
-    def mocked_api_search(self, q, count):
-        return [
-            MockedSearchResponse(
-                "mocked tweet",
-                "triciascot99",
-                "http://twitter.com/download/iphone",
-                datetime.datetime.strptime("10/15/2020, 21:24", "%m/%d/%Y, %H:%M")),
-            MockedSearchResponse(
-                "aslfdjasdf",
-                "sadfasdfas",
-                "asfjkaldfjad",
-                datetime.datetime.strptime("10/19/2020, 21:01", "%m/%d/%Y, %H:%M")),
-            ]
-
-    def test_get_random_tweet_success(self):
+    def test_chatbot_dad_success(self):
         for test_case in self.success_test_params:
-            with mock.patch('tweepy.API.search', self.mocked_api_search):
-                relevant_tweets = get_relevant_tweets(
-                    query = test_case[KEY_INPUT],
-                    access_token = TWITTER_ACCESS_TOKEN,
-                    access_token_secret = TWITTER_ACCESS_TOKEN_SECRET,
-                    key = TWITTER_KEY,
-                    key_secret = TWITTER_KEY_SECRET,
-                    count = 3)
-                
-            with mock.patch('random.choice', self.mocked_random_choice):
-                random_tweet = get_random_tweet(relevant_tweets)
-                
+            with mock.patch('requests.get', mocked_requests_get_dad):
+               response = chatbot.CoolBot().isCommand(test_case[KEY_INPUT], "")
             expected = test_case[KEY_EXPECTED]
+            self.assertDictEqual(response, expected)
+
+class FunQueryTestCase(unittest.TestCase):
+    def setUp(self):
+        self.success_test_params = [
+            {
+              KEY_INPUT: "!! funtranslate Welcome to McDonald's",
+                KEY_INPUT2: "",
+                KEY_EXPECTED: {
+                    KEY_MESSAGE: "Welcome to Macca's",
+                    KEY_USER: "Bot",
+                    KEY_PFP: "<img src=" + "\"./botpfp.png\">",
+                }
+            }
+        ]
+        
+        self.failure_test_params = [
+            {
+              KEY_INPUT: "!! funtranslate",
+                KEY_INPUT2: "",
+                KEY_EXPECTED: {
+                    KEY_MESSAGE: "Welcome to Macca's",
+                    KEY_USER: "Bot",
+                    KEY_PFP: "<img src=" + "\"./botpfp.png\">",
+                }
+            }
+        ]
+    
+    def test_chatbot_fun_success(self):
+        for test_case in self.success_test_params:
+            with mock.patch('requests.get', mocked_requests_funtranslate):
+               response = chatbot.CoolBot().isCommand(test_case[KEY_INPUT], "")
+            expected = test_case[KEY_EXPECTED]
+            self.assertDictEqual(response, expected)
             
-            self.assertDictEqual(random_tweet, expected)
+    def test_chatbot_fun_failure(self):
+        for test_case in self.failure_test_params:
+            with mock.patch('requests.get', mocked_requests_funtranslate):
+               response = chatbot.CoolBot().isCommand(test_case[KEY_INPUT], "")
+            expected = test_case[KEY_EXPECTED]
+            self.assertNotEqual(response, expected)
+            
+class AnimeQueryTestCase(unittest.TestCase):
+    def setUp(self):
+        self.success_test_params = [
+            {
+              KEY_INPUT: "!! anime Girl's Last Tour",
+                KEY_INPUT2: "",
+                KEY_EXPECTED: {
+                    KEY_MESSAGE: "Title: " + "Shoujo Shuumatsu Ryokou" + "<br></br>Score: " + "8.19" + "<br></br>Summary: " + "Amid the desolate remains of a once-thriving city, only the rumbling of a motorbike breaks the cold " + "...",
+                    KEY_USER: "Bot",
+                    KEY_PFP: "<img src=" + "\"./botpfp.png\">",
+                }
+            }
+        ]
+        
+        self.failure_test_params = [
+            {
+              KEY_INPUT: "!! anime",
+                KEY_INPUT2: "",
+                KEY_EXPECTED: {
+                    KEY_MESSAGE: "Title: " + "Shoujo Shuumatsu Ryokou" + "<br></br>Score: " + "8.19" + "<br></br>Summary: " + "Amid the desolate remains of a once-thriving city, only the rumbling of a motorbike breaks the cold " + "...",
+                    KEY_USER: "Bot",
+                    KEY_PFP: "<img src=" + "\"./botpfp.png\">",
+                }
+            }
+        ]
+    
+    def test_chatbot_anime_success(self):
+        for test_case in self.success_test_params:
+            with mock.patch('jikanpy.Jikan.search', mocked_requests_anime):
+                response = chatbot.CoolBot().isCommand(test_case[KEY_INPUT], "")
+            expected = test_case[KEY_EXPECTED]
+            self.assertDictEqual(response, expected)
+            
+    def test_chatbot_anime_failure(self):
+        for test_case in self.failure_test_params:
+            with mock.patch('jikanpy.Jikan.search', mocked_requests_anime):
+               response = chatbot.CoolBot().isCommand(test_case[KEY_INPUT], "")
+            expected = test_case[KEY_EXPECTED]
+            self.assertNotEqual(response, expected)
+            
+class GoogleAuthQueryTestCase(unittest.TestCase):
+    def setUp(self):
+        self.success_test_params = [
+            {
+              KEY_INPUT: {'name': 'Koomi', 'email': 'baconatoring@gmail.com', 'idtoken': 'mock_token'},
+                KEY_EXPECTED: True
+            }
+        ]
+    
+    def test_chatbot_dad_success(self):
+        for test_case in self.success_test_params:
+            with mock.patch('requests.get', mocked_requests_get_dad):
+               response = chatbot.CoolBot().isCommand(test_case[KEY_INPUT], "")
+            expected = test_case[KEY_EXPECTED]
+            self.assertDictEqual(response, expected)
         
 if __name__ == '__main__':
     unittest.main()

@@ -44,10 +44,11 @@ class CoolBot:
         jikan = Jikan()
         try:
             toSearch = str(anime.partition('anime')[2])
+            if(len(toSearch)==0):
+                raise Exception()
             results = jikan.search(search_type="anime", query=toSearch)['results'][0]
             if(len(results)==0):
-                self.msg = "Sorry, we couldn't find that anime!"
-                return({'message': self.msg, 'user': "Bot", 'pfp_url': self.pfp_url})
+                raise Exception()
             self.msg = "Title: " + results['title'] + "<br></br>Score: " + str(results['score']) + "<br></br>Summary: " + results['synopsis'][:100] + "..."
             return({'message': self.msg, 'user': "Bot", 'pfp_url': self.pfp_url})
         except:

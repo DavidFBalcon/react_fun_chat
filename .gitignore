@@ -4,3 +4,7 @@ sql.env
 __pycache__/
 .~c9_invoke_31nEbF.py
 __pycache__/app.cpython-36.pyc
+htmlcov/
+tests/.coverage
+tests/htmlcov/
+.coverage

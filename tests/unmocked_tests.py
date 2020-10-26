@@ -66,7 +66,7 @@ class ChatbotTestCase(unittest.TestCase):
 
     def test_bot_parse_message_success(self):
         for test in self.success_test_params[0:4]:
-            response = chatbot.CoolBot().isCommand(test[KEY_INPUT], test[KEY_INPUT2])
+            response = chatbot.CoolBot().is_command(test[KEY_INPUT], test[KEY_INPUT2])
             expected = test[KEY_EXPECTED]
             
             self.assertEqual(response[KEY_MESSAGE], expected[KEY_MESSAGE])

@@ -105,3 +105,5 @@
    b) Using additional CSS, be able to expand the message box in preview mode. In its current state, when viewed in the Cloud9 Preview browser box, the message box is only able to view one message at a time, which is slightly inconvenient.
    c) Be able to add channel functionality. This would be done using PSQL and integrating logic to parse different tables depending on the channel, changing the chat history state accordingly.
  ```
+
+pip install pylint-flask-sqlalchemy

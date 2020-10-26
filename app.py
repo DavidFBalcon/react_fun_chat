@@ -1,3 +1,6 @@
+'''
+Python Appeasment
+'''
 from os.path import join, dirname
 from dotenv import load_dotenv
 from flask_socketio import SocketIO, send
@@ -17,140 +20,164 @@ app = flask.Flask(__name__)
 socketio = flask_socketio.SocketIO(app)
 socketio.init_app(app, cors_allowed_origins="*")
 
-dotenv_path = join(dirname(__file__), 'sql.env')
+dotenv_path = join(dirname(__file__), "sql.env")
 load_dotenv(dotenv_path)
 
-#BOILER PLATE CODE TO INSTANTIATE PSQL AND SQLALCHEMY
+# BOILER PLATE CODE TO INSTANTIATE PSQL AND SQLALCHEMY
 
-database_uri = os.environ['DATABASE_URL']
-    
-app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
+database_uri = os.environ["DATABASE_URL"]
+
+app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
 
 db = flask_sqlalchemy.SQLAlchemy(app)
 
 db.init_app(app)
 db.app = app
-currentUsers = 0
+CURRENT_USERS = 0
 
 import models
 import chatbot
 
 ##SENDS CHAT HISTORY TO ALL PARTICIPANTS
 def emit_all_history(channel):
-    all_history = [{'message': record.plaintext, 'user': record.userName, 'pfp_url': record.pfp_url} for record in db.session.query(models.ChatHistory).all()]
-    socketio.emit(channel, all_history)
-    
+    '''
+    Emits all history along channel
+    '''
+    all_history = [
+        {
+            "message": record.plaintext,
+            "user": record.userName,
+            "pfp_url": record.pfp_url,
+        }
+        for record in db.session.query(models.ChatHistory).all()
+    ]
+    socketio.emit(channel, all_history) 
+
+
 def push_new_user_to_db(id, name, email):
-    db.session.add(models.AuthUser(id, name, email));
-    db.session.commit();
-    
+    db.session.add(models.AuthUser(id, name, email))
+    db.session.commit()
+
+
 def check_images(to_check, imgArray):
     extensions = [".jpg", ".png", ".gif"]
     has_image = False
     for i in range(len(to_check)):
         if validators.url(to_check[i]):
             has_image = True
-            if(to_check[i][-4:] in extensions):
+            if to_check[i][-4:] in extensions:
                 imgArray.append(to_check[i])
-            to_check[i] = "<a href=" + "\"" + to_check[i] + "\">" + to_check[i] + "</a>"
+            to_check[i] = "<a href=" + '"' + to_check[i] + '">' + to_check[i] + "</a>"
     return has_image
-    
-    
-##SOCKET EVENTS
-@socketio.on('connect')
-def on_connect():
-    global currentUsers
-    print('Someone connected!')
-    socketio.emit('connected', {
-        'test': 'Connected'
-    })
 
-@socketio.on('disconnect')
+
+##SOCKET EVENTS
+@socketio.on("connect")
+def on_connect():
+    global CURRENT_USERS
+    print("Someone connected!")
+    socketio.emit("connected", {"test": "Connected"})
+
+
+@socketio.on("disconnect")
 def on_disconnect():
-    global currentUsers
-    print ('Someone disconnected!')
-    if(currentUsers>0):
-        currentUsers-=1
-    socketio.emit('user change', currentUsers)
-    
-@socketio.on('user update')
+    global CURRENT_USERS
+    print("Someone disconnected!")
+    if CURRENT_USERS > 0:
+        CURRENT_USERS -= 1
+    socketio.emit("user change", CURRENT_USERS)
+
+
+@socketio.on("user update")
 def on_user_update():
-    global currentUsers
-    socketio.emit('user change', currentUsers)
-    
-@socketio.on('new google user')
+    global CURRENT_USERS
+    socketio.emit("user change", CURRENT_USERS)
+
+
+@socketio.on("new google user")
 def on_new_google_user(data):
-    global currentUsers
+    global CURRENT_USERS
     print("Beginning to authenticate data: ", data)
     sid = flask.request.sid
-    try:    
-        idinfo = id_token.verify_oauth2_token(data['idtoken'], requests.Request(), "698177391473-sfucar7t4qoum5rpt14mso7vkbuh1lao.apps.googleusercontent.com")
-        userid = idinfo['sub']
+    try:
+        idinfo = id_token.verify_oauth2_token(
+            data["idtoken"],
+            requests.Request(),
+            "698177391473-sfucar7t4qoum5rpt14mso7vkbuh1lao.apps.googleusercontent.com",
+        )
+        userid = idinfo["sub"]
         print("Verified user. Proceeding to check database.")
-        exists = db.session.query(models.AuthUser.id).filter_by(id=userid).scalar() is not None
-        if(not exists):
-            push_new_user_to_db(userid, data['name'], data['email'])
-        print("Updating currentUsers ", currentUsers)
-        currentUsers+=1
-        print("Current users in room: ", currentUsers)
-        socketio.emit('Verified', data['name'], room=sid)
+        exists = (
+            db.session.query(models.AuthUser.id).filter_by(id=userid).scalar()
+            is not None
+        )
+        if not exists:
+            push_new_user_to_db(userid, data["name"], data["email"])
+        print("Updating CURRENT_USERS ", CURRENT_USERS)
+        CURRENT_USERS += 1
+        print("Current users in room: ", CURRENT_USERS)
+        socketio.emit("Verified", data["name"], room=sid)
         return True
     except ValueError:
-    # Invalid token
+        # Invalid token
         print("Could not verify token.")
         return False
-    
-@socketio.on('retrieve history')
+
+
+@socketio.on("retrieve history")
 def on_retrieve_history():
     print("Request for chat history recieved.")
-    emit_all_history('sent history')
-    
+    emit_all_history("sent history")
 
-#SOCKET EVENT FOR A NEW MESSAGE
-@socketio.on('new message')
+
+# SOCKET EVENT FOR A NEW MESSAGE
+@socketio.on("new message")
 def on_new_message(data):
     print("Recieved new data from client: ", data)
-    #URL VALIDATION
-    ret_data = data['message']
+    # URL VALIDATION
+    ret_data = data["message"]
     string_check = ret_data.split()
     img = []
     check_images(string_check, img)
-    ret_data=" ".join(string_check)
-    #SAVING MESSAGE TO DATABASE AND SENDING TO CLIENT FOR DISPLAY
-    db.session.add(models.ChatHistory(ret_data, data['user'], data['pfp_url']))
+    ret_data = " ".join(string_check)
+    # SAVING MESSAGE TO DATABASE AND SENDING TO CLIENT FOR DISPLAY
+    db.session.add(models.ChatHistory(ret_data, data["user"], data["pfp_url"]))
     db.session.commit()
     print("Sending new data to client.")
-    socketio.emit('message display', {'message': ret_data, 'user': data['user'], 'pfp_url': data['pfp_url']})
-    
-    #CHECKING IF BOT COMMAND IS TRUE AND INITIALIZING BOT
+    socketio.emit(
+        "message display",
+        {"message": ret_data, "user": data["user"], "pfp_url": data["pfp_url"]},
+    )
+
+    # CHECKING IF BOT COMMAND IS TRUE AND INITIALIZING BOT
     funbot = chatbot.CoolBot()
-    #CHECKING FOR BOT COMMANDS
+    # CHECKING FOR BOT COMMANDS
     to_emit = funbot.isCommand(ret_data, "")
-    #COMMIT AND SEND
-    if(funbot.commandFlag):
+    # COMMIT AND SEND
+    if funbot.commandFlag:
         db.session.add(models.ChatHistory(funbot.msg, "Bot", funbot.pfp_url))
         db.session.commit()
-        socketio.emit('message display', to_emit)
-    #CHECKING FOR ANY IMAGES TO DISPLAY AND DISPLAYS THEM ALL WITH BOT
-    elif(len(img)!=0):
+        socketio.emit("message display", to_emit)
+    # CHECKING FOR ANY IMAGES TO DISPLAY AND DISPLAYS THEM ALL WITH BOT
+    elif len(img) != 0:
         for link in img:
-            to_emit=funbot.isCommand(ret_data, link)
+            to_emit = funbot.isCommand(ret_data, link)
             db.session.add(models.ChatHistory(funbot.msg, "Bot", funbot.pfp_url))
             db.session.commit()
-            socketio.emit('message display', to_emit)
-            
-        
+            socketio.emit("message display", to_emit)
 
-@app.route('/')
+
+@app.route("/")
 def hello():
     models.db.create_all()
     db.session.commit()
-    return flask.render_template('index.html')
-    
-if __name__ == '__main__': 
+    return flask.render_template("index.html")
+
+
+if __name__ == "__main__":
     socketio.run(
         app,
-        host=os.getenv('IP', '0.0.0.0'),
-        port=int(os.getenv('PORT', 8080)),
-        debug=True
+        host=os.getenv("IP", "0.0.0.0"),
+        port=int(os.getenv("PORT", 8080)),
+        debug=True,
     )

@@ -6,20 +6,20 @@ orbs:
 workflows:
   heroku_deploy:
     jobs:
-      - build-and-test
+      - heroku/deploy-via-git
  
 jobs:
-  build:
+  build-and-test:
     docker:
       - image: circleci/python:3.6.4
     steps:
       - checkout
-      - run:
-            name: Install dependencies
-            command: sudo pip install -r requirements.txt
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
       - run: 
-            name: Run unmocked tests
             command: python ./tests/unmocked_tests.py
+            name: Run unmocked tests
       - run:
-            name: Run mocked tests
             command: python ./tests/mocked_tests.py
+            name: Run mocked tests

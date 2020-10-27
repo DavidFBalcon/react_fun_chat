@@ -1,28 +1,25 @@
 version: 2.1
  
 orbs:
-    python: circleci/python@0.2.1
-    
-jobs:
-    build-and-test:
-    executor: python/default
-    steps:
-        - checkout
-        - python/load-cache
-        - python/install-deps
-        - python/save-cache
-        - run:
-            command: python ./tests/unmocked_tests.py
-            name: Unmocked Tests
-        - run:
-            command: python ./tests/mocked_tests.py
-            name: Mocked Tests
-        - run:    
-            name: deploy to heroku    
-            command: |      
-                git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
-    
+  heroku: circleci/heroku@1.2.2
+ 
 workflows:
-    main:
-        jobs:
-            - build-and-test
+  heroku_deploy:
+    jobs:
+      - heroku/deploy-via-git
+ 
+jobs:
+  build-and-test:
+    docker:
+      - image: circleci/python:3.6.4
+    steps:
+      - checkout
+      - python/load-cache
+      - python/install-deps
+      - python/save-cache
+      - run: 
+            command: python ./tests/unmocked_tests.py
+            name: Run unmocked tests
+      - run:
+            command: python ./tests/mocked_tests.py
+            name: Run mocked tests

@@ -144,7 +144,7 @@ class ImageTestCase(unittest.TestCase):
             {
                 KEY_INPUT: ["Hi!", "I", "Said", "https://www.clipartkey.com/mpngs/"\
                 +"m/235-2358752_poggers"\
-                +"-emote-clipart-png-download-transparent-background-poggers.pngr4ur4un3r4n"], KEY_INPUT2: [],
+                +"-emote-clipart-png-download-transparent-background-poggers.pngr"], KEY_INPUT2: [],
                 KEY_EXPECTED: True
             },
         ]

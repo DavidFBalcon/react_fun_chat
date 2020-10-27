@@ -13,10 +13,10 @@ export default function Login() {
   function loginUser(response) {
     const name = response.getBasicProfile().getName();
     const email = response.getBasicProfile().getEmail();
-    const pfpUrl = `<img src="${response.getBasicProfile().getImageUrl()}">`;
+    const pfpUrl = '<img src="' + response.getBasicProfile().getImageUrl() + '">';
     setPfp(pfpUrl);
-    const { idToken } = response.getAuthResponse();
-    Socket.emit('new google user', { name, email, idtoken: idToken });
+    const idToken = response.getAuthResponse().id_token;
+    Socket.emit('new google user', {name: name, email: email, idtoken: idToken});
   }
 
   function loginUserFail() {

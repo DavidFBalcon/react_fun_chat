@@ -2,7 +2,8 @@
     chatbot.py
     This file tests all methods in chatbot.py.
 '''
-
+# pylint: disable=wrong-import-position
+# pylint: disable=import-error
 import sys
 import os
 import unittest

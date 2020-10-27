@@ -1,6 +1,9 @@
 '''
 Python Appeasment
 '''
+# pylint: disable=no-member
+# pylint: disable=wrong-import-position
+# pylint: disable=global-statement
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
@@ -58,7 +61,6 @@ def push_new_user_to_db(ident, name, email):
     db.session.add(models.AuthUser(ident, name, email))
     db.session.commit()
 
-
 def check_images(to_check, img_array):
     '''
     Checks if valid image in message.
@@ -68,14 +70,19 @@ def check_images(to_check, img_array):
     i=0
     for word in to_check:
         if validators.url(word):
-            has_image = True
             if word[-4:] in extensions:
+                has_image = True
                 img_array.append(word)
             to_check[i] = "<a href=" + '"' + to_check[i] + '">' + to_check[i] + "</a>"
             i+=1
     return has_image
 
-
+def get_sid():
+    '''
+    returns sid.
+    '''
+    sid = flask.request.sid
+    return sid
 ##SOCKET EVENTS
 @socketio.on("connect")
 def on_connect():
@@ -83,7 +90,7 @@ def on_connect():
     Runs on connect.
     '''
     print("Someone connected!")
-    socketio.emit("connected", {"test": "Connected"})
+    return socketio.emit("connected", {"test": "Connected"})
 
 
 @socketio.on("disconnect")
@@ -95,7 +102,7 @@ def on_disconnect():
     print("Someone disconnected!")
     if CURRENT_USERS > 0:
         CURRENT_USERS -= 1
-    socketio.emit("user change", CURRENT_USERS)
+    return socketio.emit("user change", CURRENT_USERS)
 
 
 @socketio.on("user update")
@@ -114,7 +121,7 @@ def on_new_google_user(data):
     '''
     global CURRENT_USERS
     print("Beginning to authenticate data: ", data)
-    sid = flask.request.sid
+    sid = get_sid()
     try:
         idinfo = id_token.verify_oauth2_token(
             data["idtoken"],
@@ -133,11 +140,14 @@ def on_new_google_user(data):
         CURRENT_USERS += 1
         print("Current users in room: ", CURRENT_USERS)
         socketio.emit("Verified", data["name"], room=sid)
-        return True
+        return userid
     except ValueError:
         # Invalid token
         print("Could not verify token.")
-        return False
+        return "Unverified."
+    except KeyError:
+        print("Malformed token.")
+        return "Unverified."
 
 
 @socketio.on("retrieve history")
@@ -187,6 +197,7 @@ def on_new_message(data):
             db.session.add(models.ChatHistory(funbot.msg, "Bot", funbot.pfp_url))
             db.session.commit()
             socketio.emit("message display", to_emit)
+    return {"message": ret_data, "user": data["user"], "pfp_url": data["pfp_url"]}
 
 
 @app.route("/")
@@ -203,7 +214,7 @@ if __name__ == "__main__":
     socketio.run(
         app,
         host=os.getenv("IP", "0.0.0.0"),
-        port=int(os.getenv("PORT", 8080)),
+        port=int(os.getenv("PORT", "8080")),
         debug=True,
     )
     

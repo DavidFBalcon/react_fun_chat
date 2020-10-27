@@ -4,13 +4,13 @@ import './Messagestyles.css';
 import botpfp from './botpfp.png';
 
 function Message({
-  text, user, reader, pfpUrl,
+  text, user, reader, pfp_url,
 }) {
   function createMarkup() {
     return { __html: { text }.text };
   }
   function createImg() {
-    return { __html: { pfpUrl }.pfpUrl };
+    return { __html: { pfp_url }.pfp_url };
   }
 
   if (user === reader) {
@@ -64,7 +64,7 @@ Message.propTypes = {
   text: PropTypes.string.isRequired,
   user: PropTypes.string.isRequired,
   reader: PropTypes.string.isRequired,
-  pfpUrl: PropTypes.string.isRequired,
+  pfp_url: PropTypes.string.isRequired,
 };
 
 export default Message;

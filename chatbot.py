@@ -2,8 +2,7 @@
 Chatbot definition
 chatbot.py
 '''
-from pprint import pprint
-import json
+# pylint: disable=too-many-return-statements
 from jikanpy import Jikan
 import requests
 
@@ -25,16 +24,15 @@ class CoolBot:
         try:
             pre_translate = str(ret_data.partition("funtranslate")[2])
             if len(pre_translate) == 0:
-                self.msg = "Please input a sentence to translate after 'funtranslate.'"
-            else:
-                response = requests.get(
-                    "https://api.funtranslations.com/translate/australian.json?text="
-                    + pre_translate
+                raise ValueError()
+            response = requests.get(
+                "https://api.funtranslations.com/translate/australian.json?text="\
+                + pre_translate
                 )
-                post_translate = response.json()["contents"]["translated"]
-                self.msg = post_translate
+            post_translate = response.json()["contents"]["translated"]
+            self.msg = post_translate
             return {"message": self.msg, "user": "Bot", "pfp_url": self.pfp_url}
-        except:
+        except ValueError:
             self.msg = "Sorry! You either did not provide anything to translate,\
  or your input was malformed."
             return {"message": self.msg, "user": "Bot", "pfp_url": self.pfp_url}
@@ -83,10 +81,10 @@ class CoolBot:
         try:
             to_search = str(anime.partition("anime")[2])
             if len(to_search) == 0:
-                raise Exception()
+                raise ValueError
             results = jikan.search(search_type="anime", query=to_search)["results"][0]
             if len(results) == 0:
-                raise Exception()
+                raise ValueError
             self.msg = (
                 "Title: "
                 + results["title"]
@@ -97,7 +95,7 @@ class CoolBot:
                 + "..."
             )
             return {"message": self.msg, "user": "Bot", "pfp_url": self.pfp_url}
-        except:
+        except ValueError:
             self.msg = "Sorry! We either couldn't find that anime, did not provide\
  an anime at all, or you've provided malformed input."
             return {"message": self.msg, "user": "Bot", "pfp_url": self.pfp_url}
@@ -133,10 +131,8 @@ class CoolBot:
             if string_check[1] == "anime":
                 return self.anime_search(message)
             ##UNKNOWN COMMAND
-            else:
-                print("Unrecognized command recieved.")
-                return self.unknown()
+            print("Unrecognized command recieved.")
+            return self.unknown()
         if img_link != "":
             return self.img_render(img_link)
-        else:
-            return False
+        return False

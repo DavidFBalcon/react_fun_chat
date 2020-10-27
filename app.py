@@ -47,7 +47,7 @@ def emit_all_history(channel):
     all_history = [
         {
             "message": record.plaintext,
-            "user": record.userName,
+            "user": record.user_name,
             "pfp_url": record.pfp_url,
         }
         for record in db.session.query(models.ChatHistory).all()

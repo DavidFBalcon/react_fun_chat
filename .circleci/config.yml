@@ -1,17 +1,11 @@
 version: 2.1
  
 orbs:
-  heroku: circleci/heroku@1.2.2
- 
-workflows:
-  heroku_deploy:
-    jobs:
-      - heroku/deploy-via-git
+  python: circleci/python@0.2.1
  
 jobs:
   build-and-test:
-    docker:
-      - image: circleci/python:3.6.4
+    executor: python/default
     steps:
       - checkout
       - python/load-cache
@@ -23,3 +17,8 @@ jobs:
       - run:
             command: python ./tests/mocked_tests.py
             name: Run mocked tests
+
+workflows:
+  main:
+    jobs:
+      - build-and-test

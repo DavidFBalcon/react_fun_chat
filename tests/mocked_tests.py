@@ -290,6 +290,11 @@ class GoogleLoginTestCase(unittest.TestCase):
                 KEY_INPUT: {"name": "Koomi", "email":\
                 "baconatoring@gmail.com", "idtoken": "bad_mock_token"},
                 KEY_EXPECTED: "Unverified."
+            },
+            {
+                KEY_INPUT: {"name": "Koomi", "email":\
+                "baconatoring@gmail.com", "idtoken": "vvmock_token"},
+                KEY_EXPECTED: "Unverified."
             }
         ]
     def mocked_verify(self, *args, **kwargs):
@@ -298,7 +303,9 @@ class GoogleLoginTestCase(unittest.TestCase):
         '''
         if args[0]=="good_mock_token":
             return {"sub": "mock_id"}
-        return {"false": False}
+        if args[0]=="bad_mock_token":
+            return {"false": False}
+        raise ValueError
     def mocked_flask(self):
         '''
         Mocks out flask sid request.
@@ -318,7 +325,7 @@ class GoogleLoginTestCase(unittest.TestCase):
         return MockedFlaskServer("1234").sid()
     def test_on_new_google_user_success(self):
         '''
-        Success cases for push_new_user_to_db.
+        Success cases for on_new_google_user.
         '''
         for test_case in self.success_test_params:
             with mock.patch('google.oauth2.id_token.verify_oauth2_token', self.mocked_verify):
@@ -329,7 +336,7 @@ class GoogleLoginTestCase(unittest.TestCase):
             self.assertEqual(response, expected)
     def test_on_new_google_user_failure(self):
         '''
-        Success cases for push_new_user_to_db.
+        Failure cases for on_new_google_user.
         '''
         for test_case in self.failure_test_params:
             with mock.patch('google.oauth2.id_token.verify_oauth2_token', self.mocked_verify):

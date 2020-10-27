@@ -6,7 +6,7 @@ orbs:
 workflows:
   heroku_deploy:
     jobs:
-      - heroku/deploy-via-git
+      - build-and-test
  
 jobs:
   build:
@@ -19,11 +19,7 @@ jobs:
             command: sudo pip install -r requirements.txt
       - run: 
             name: Run unmocked tests
-            command: python ./tests/unmocked_unit_tests.py
+            command: python ./tests/unmocked_tests.py
       - run:
             name: Run mocked tests
-            command: python ./tests/mocked_unit_tests.py
-      - run:
-            name: Deploy to heroku
-            command: |
-              git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git main
+            command: python ./tests/mocked_tests.py

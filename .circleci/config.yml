@@ -19,10 +19,10 @@ jobs:
             command: sudo pip install -r requirements.txt
       - run: 
             name: Run unmocked tests
-            command: python tests/unmocked_unit_tests.py
+            command: python ./tests/unmocked_unit_tests.py
       - run:
             name: Run mocked tests
-            command: python tests/mocked_unit_tests.py
+            command: python ./tests/mocked_unit_tests.py
       - run:
             name: Deploy to heroku
             command: |

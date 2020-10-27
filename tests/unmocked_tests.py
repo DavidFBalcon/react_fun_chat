@@ -4,10 +4,10 @@
 '''
 # pylint: disable=wrong-import-position
 # pylint: disable=import-error
+from os.path import dirname, join
 import sys
-import os
+sys.path.insert(1, join(dirname(__file__), '../'))
 import unittest
-sys.path.append(os.path.abspath(os.path.join('..')))
 import chatbot
 import app
 KEY_INPUT = "arg1"

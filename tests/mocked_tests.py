@@ -9,9 +9,9 @@
 # pylint: disable=unused-argument
 import unittest
 import unittest.mock as mock
+from os.path import dirname, join
 import sys
-import os
-sys.path.append(os.path.abspath(os.path.join('..')))
+sys.path.insert(1, join(dirname(__file__), '../'))
 import chatbot
 import app
 from alchemy_mock.mocking import AlchemyMagicMock

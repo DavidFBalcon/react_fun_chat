@@ -135,4 +135,4 @@ class CoolBot:
             return self.unknown()
         if img_link != "":
             return self.img_render(img_link)
-        return False
+        return {"message": False, "user": "Bot", "pfp_url": self.pfp_url}

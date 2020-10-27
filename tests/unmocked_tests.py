@@ -64,14 +64,64 @@ class ChatbotTestCase(unittest.TestCase):
             }
             },
         ]
+        self.failure_test_params = [
+            {KEY_INPUT: "!!about",KEY_INPUT2: "",
+            KEY_EXPECTED: {
+                KEY_MESSAGE: "Hi I'm a bot! I may be primitive, "\
+                +"but I'm trying my best. My about command tells you about me,"\
+                +" you can use funtranslate to do some weird translations, I can tell dad jokes, "\
+                +"and give you specific anime information with !! anime {your_anime}",
+                KEY_USER: "Bot",
+                KEY_PFP: "<img src=" + "\"./botpfp.png\">",
+                }
+            },
+            {KEY_INPUT: "!!help", KEY_INPUT2: "",
+            KEY_EXPECTED: {
+                KEY_MESSAGE: "Here are all the commands I know: about, "\
+                +"funtranslate, dad, and anime.",
+                KEY_USER: "Bot",
+                KEY_PFP: "<img src=" + "\"./botpfp.png\">",
+            }
+            },
+            {KEY_INPUT: "!! help", KEY_INPUT2: "",
+            KEY_EXPECTED: {
+                KEY_MESSAGE: "Sorry, I didn't understand that command.",
+                KEY_USER: "Bot",
+                KEY_PFP: "<img src=" + "\"./botpfp.png\">",
+            }
+            },
+            {
+            KEY_INPUT: "https://www.clipartkey.com/mpngs/m/235-2358752"\
+            +"_poggers-emote-clipart-png-download-transparent-background"\
+            +"-poggers.pngvvvv", KEY_INPUT2: "https://www.clipartkey.com/mpngs/m/235-2358752"\
+            +"_poggers-emote-clipart-png-download-transparent-background"\
+            +"-poggers.pngvvvvv",
+            KEY_EXPECTED: {
+                KEY_MESSAGE: "<img src=" + "\"" + "https://www.clipartkey.com/mpngs/m/235-2358752"\
+                +"_poggers-emote-clipart-png-download-transparent-background-poggers.png" + "\">",
+                KEY_USER: "Bot",
+                KEY_PFP: "<img src=" + "\"./botpfp.png\">",
+            }
+            },
+        ]
     def test_bot_parse_message_success(self):
         '''
-        Test success cases for first 3 cases.
+        Test success cases.
         '''
-        for test in self.success_test_params[0:4]:
+        for test in self.success_test_params:
             response = chatbot.CoolBot().is_command(test[KEY_INPUT], test[KEY_INPUT2])
             expected = test[KEY_EXPECTED]
             self.assertEqual(response[KEY_MESSAGE], expected[KEY_MESSAGE])
+            self.assertEqual(response[KEY_USER], expected[KEY_USER])
+            self.assertEqual(response[KEY_PFP], expected[KEY_PFP])
+    def test_bot_parse_message_failure(self):
+        '''
+        Test failure cases.
+        '''
+        for test in self.failure_test_params[0:4]:
+            response = chatbot.CoolBot().is_command(test[KEY_INPUT], test[KEY_INPUT2])
+            expected = test[KEY_EXPECTED]
+            self.assertNotEqual(response[KEY_MESSAGE], expected[KEY_MESSAGE])
             self.assertEqual(response[KEY_USER], expected[KEY_USER])
             self.assertEqual(response[KEY_PFP], expected[KEY_PFP])
 class ImageTestCase(unittest.TestCase):
@@ -91,15 +141,29 @@ class ImageTestCase(unittest.TestCase):
             },
         ]
         self.failure_test_params = [
+            {
+                KEY_INPUT: ["Hi!", "I", "Said", "https://www.clipartkey.com/mpngs/"\
+                +"m/235-2358752_poggers"\
+                +"-emote-clipart-png-download-transparent-background-poggers.pngr4ur4un3r4n"], KEY_INPUT2: [],
+                KEY_EXPECTED: True
+            },
         ]
     def test_check_img_success(self):
         '''
-        Run test on image.
+        Run success test on image.
         '''
         for test in self.success_test_params:
             response = app.check_images(test[KEY_INPUT], test[KEY_INPUT2])
             expected = test[KEY_EXPECTED]
             self.assertEqual(response, expected)
+    def test_check_img_failure(self):
+        '''
+        Run success test on image.
+        '''
+        for test in self.failure_test_params:
+            response = app.check_images(test[KEY_INPUT], test[KEY_INPUT2])
+            expected = test[KEY_EXPECTED]
+            self.assertNotEqual(response, expected)
 if __name__ == '__main__':
     unittest.main()
     

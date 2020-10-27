@@ -16,6 +16,9 @@
   j) `npm install url-loader --save-dev` warning: Important! In order for the module to properly pack images, open webpack.config.js and add this loader to the rules[] in module: :warning: `{test: /\.(jpg|png)$/, use: {loader: 'url-loader',},}`
   k) `pip install --upgrade google-auth`
   l) `npm install react-google-login`
+  m) `npm install --save prop-types`
+  o) `pip install pylint-flask-sqlalchemy`
+  p) `npm install eslint --save-dev`
   ```
  ## Getting PSQL and running SQLAlchemy
 2. Set up PSQL by installing the following packages
@@ -89,24 +92,22 @@
   e) `anime {anime_query}`
 ```  
 
-## Documentation: Problems and Future Features
+## Documentation: Questions
 
 7. Issues encountered and fixed:
 ```
-  a) CSS files not being packed by the module in react. Fixed by installing the proper css webpacks and modifying the module, as shown in this README.
-  b) Linebreaks and HTML tags not being rendered by ReactDOM. Fixed by utilizing the React dangerouslySetInnerHtml to parse HTML tags in ReactDOM.
-  c) Database not instantiating on first python run. When someone requests chat history, the relation would not exist. Realized the problem was attributed to importing the models.py before the variable db was created in app.py, when db was a dependency in models.py. Fixed by importing models later and instantiating the relation upon index render.
-  d) Chatbot would silently fail when someone sent a command !! anime or !! funtranslate without parameters, due to the logic attempting to parse outside of list index after partitioning the message. Fixed by implementing a try-except clause and prompting the user with a message from a bot, requesting the proper parameters.
-  e) Encountered issues with PSQL Peer Authentication Error when pushing local tables to heroku as well as SQL_user information. Circumvented this buy simply allowing heroku to use models.py to create its own table and claim ownership.
- ```
- 8. Improvements
- ```
-   a) If possible, the implementation of profile pictures. Beside every bubble, a small profile picture, randomly defaulted at first and with a choice to upload, would be present. (COMPLETED!)
-   b) Using additional CSS, be able to expand the message box in preview mode. In its current state, when viewed in the Cloud9 Preview browser box, the message box is only able to view one message at a time, which is slightly inconvenient.
-   c) Be able to add channel functionality. This would be done using PSQL and integrating logic to parse different tables depending on the channel, changing the chat history state accordingly.
- ```
+  a) Why did you choose to test the code that you did?
+    - For unmocked tests, normal input and malformed input were tested to get maximum coverage in code, ensuring that each path for each
+    deterministic chatbot function properly ran. This was because malformed user input in terms of bot commands are extremely common, as many users
+    are not immediately aware of the syntax of each command for the bot. Furthermore, making sure that basic images could be properly rendered was important
+    in unmocked testing, as typically one properly wrapped image handled all image cases. For mocked testing, each API was handled (dad, funtranslate, and anime)
+    and tested for proper input to ensure that the business logic in handling requests was always successful. The most common malformed input, that is a command prefix
+    without a space was extensively tested to ensure that the proper exceptions were raised when the bot came across these common user issues, and that if the input was normal yet
+    the bot failed in a response, that it was not the business logic but rather the API's end. Login verification and new messages were tested, as these were integral
+    to the user experience.
+  b) Is there anything else you would like to test if you had the time (or was asked to do so)?
+    - Given more time, I would have liked to do more extensive mock testing on sockets with the front-end, as there could very well be many bugs in the communication between these
+    two ends. Implementation of a mock-socket library would be paramount in doing this.
+```
 
-pip install pylint-flask-sqlalchemy
-npm install eslint --save-dev
-npm install --save prop-types
-coverage run -m --source=.. unittest *.py && coverage html
+
